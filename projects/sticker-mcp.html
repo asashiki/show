@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-palette="sakura">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sticker-mcp · 让 AI 在对话里发表情包</title>
+  <meta name="description" content="sticker-mcp —— 内联 MCP Apps 组件 + 网页后台，让 AI 在 claude.ai / ChatGPT 里发表情包。" />
+  <script>
+    (function () { var r = document.documentElement;
+      r.setAttribute("data-theme", localStorage.getItem("ad-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+      r.setAttribute("data-palette", localStorage.getItem("ad-palette") || "sakura"); })();
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/asashiki/asashiki-design@main/tokens/tokens.css" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark"><span>浅</span></span> Asashiki</a>
+      <span class="spacer"></span>
+      <a class="navlink" href="/#projects">项目</a>
+      <a class="navlink" href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">GitHub</a>
+      <div class="ctrls">
+        <button class="iconbtn" id="paletteBtn" title="切换季节配色">🌸</button>
+        <button class="iconbtn" id="themeBtn" title="切换明暗">☀️</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="glow"></div>
+    <div class="wrap">
+      <a class="back" href="/#projects">← 返回全部项目</a>
+      <span class="eyebrow" style="margin-top:1rem"><span>🌸 sticker-mcp</span></span>
+      <h1>让 AI 在对话里<br />发表情包。</h1>
+      <p class="lead">一个 MCP 服务：把表情包作为内联组件渲染进 claude.ai / ChatGPT 的对话流，AI 能按心情自动挑图，还能自己往图库里加新表情。</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">在 GitHub 查看</a>
+        <a class="btn btn-ghost" href="#install">快速开始</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 演示：仿对话气泡，只“抄元素”展示观感，非真实功能 -->
+    <section>
+      <div class="wrap">
+        <div class="sec-head"><h2>它长什么样</h2><p>AI 在回复里直接甩出一张表情 —— 下面是效果示意。</p></div>
+        <div class="demo-frame">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <div class="bubble me">这波操作可以啊 👍</div>
+          <div class="bubble">那必须的，看我给你发个表情</div>
+          <div class="bubble sticker"><div class="ph">🎉</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="sec-head"><h2>特性</h2></div>
+        <div class="feature-list">
+          <div class="feature"><h4>内联渲染</h4><p>基于 MCP Apps 组件，在 claude.ai 与 ChatGPT 网页端直接显示，不只是贴链接。</p></div>
+          <div class="feature"><h4>按心情挑图</h4><p>内置情绪 / 场景匹配，AI 描述一下就能选中合适的表情。</p></div>
+          <div class="feature"><h4>图库可成长</h4><p>AI 能通过临时上传链接或现有图片 URL 往库里添加新表情。</p></div>
+          <div class="feature"><h4>网页后台</h4><p><code>/admin</code> 支持拖拽上传、批量操作、打标签、搜索与删除。</p></div>
+          <div class="feature"><h4>轻量存储</h4><p>JSON 文件 + 磁盘图片，无需数据库，自托管友好。</p></div>
+          <div class="feature"><h4>可选鉴权</h4><p><code>MCP_AUTH_PASSWORD</code> / <code>ADMIN_TOKEN</code> 保护接口与后台。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap prose">
+        <div class="sec-head"><h2>快速开始</h2></div>
+        <pre class="code"><span class="c"># 构建并启动（Streamable HTTP，默认 :3000）</span>
+npm install
+npm run build
+npm start
+
+<span class="c"># Claude Desktop（stdio）</span>
+npm run start:stdio</pre>
+        <p style="margin:1.1rem 0 .5rem;color:var(--text-2)">Claude Desktop 配置：</p>
+        <pre class="code">{
+  "mcpServers": {
+    "sticker": {
+      "command": "node",
+      "args": ["path/to/sticker-mcp/dist/stdio.js"]
+    }
+  }
+}</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>sticker-mcp · 浅仪式 Asashiki</span>
+      <span class="spacer"></span>
+      <a href="/#projects">全部项目</a>
+      <a href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+
+  <script src="/assets/theme.js"></script>
+</body>
+</html>

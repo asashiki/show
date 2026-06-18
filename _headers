@@ -1,0 +1,6 @@
+# Cloudflare Pages 响应头规则
+/assets/*
+  Cache-Control: public, max-age=86400, must-revalidate
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
