@@ -1,0 +1,159 @@
+/* ============================================================
+   show.asashiki.com · 站点样式
+   依赖 Asashiki Design tokens.css（通过 CDN 引入，见各页 <head>）
+   规则：不写死 hex / px 强调值，只用 design tokens 变量。
+   ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font: var(--t-body, 400 16px/1.65 system-ui);
+  font-family: var(--font, ui-sans-serif, system-ui, -apple-system,
+    "PingFang SC", "Microsoft YaHei", sans-serif);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: var(--text-link); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+
+.wrap { width: 100%; max-width: var(--max-layout, 1080px); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2rem); }
+.prose { max-width: var(--max-prose, 720px); }
+
+/* ── 顶栏 ─────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface-overlay);
+  backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.nav .wrap { display: flex; align-items: center; gap: 1rem; height: 60px; }
+.brand { display: flex; align-items: center; gap: .55rem; font-weight: 600; color: var(--text); font-size: 1.05rem; }
+.brand .mark {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-size: .9rem; transform: skewX(-12deg);
+}
+.brand .mark span { transform: skewX(12deg); }
+.nav .spacer { flex: 1; }
+.nav a.navlink { color: var(--text-2); font-size: .92rem; padding: .35rem .1rem; }
+.nav a.navlink:hover { color: var(--text); }
+
+/* ── 主题/季节切换 ─────────────────────────── */
+.ctrls { display: flex; gap: .4rem; }
+.iconbtn {
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-2); border-radius: 7px; width: 34px; height: 34px;
+  display: grid; place-items: center; cursor: pointer; font-size: 1rem;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.iconbtn:hover { border-color: var(--border-strong); color: var(--text); background: var(--surface-raised); }
+
+/* ── Hero ─────────────────────────────────── */
+.hero { padding: clamp(3rem, 9vw, 6rem) 0 clamp(2rem, 5vw, 3.5rem); position: relative; }
+.eyebrow {
+  display: inline-block; font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+  color: var(--accent); background: var(--accent-soft);
+  padding: .3rem .7rem; border-radius: 7px; transform: skewX(-12deg); margin-bottom: 1.1rem;
+}
+.eyebrow span { display: inline-block; transform: skewX(12deg); }
+.hero h1 { font: var(--t-hero, 700 clamp(2rem,6vw,2.9rem)/1.1 inherit); letter-spacing: -.02em; margin-bottom: .9rem; }
+.hero .lead { font-size: clamp(1.05rem, 2.6vw, 1.25rem); color: var(--text-2); max-width: 38ch; }
+.hero .glow {
+  position: absolute; inset: 0 0 auto auto; width: 42%; height: 100%;
+  background: var(--glow); opacity: .6; filter: blur(8px); z-index: -1;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 60%); pointer-events: none;
+}
+
+/* ── 按钮 ─────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .6rem 1.15rem; border-radius: 10px; font-weight: 600; font-size: .95rem;
+  border: 1px solid transparent; cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+.btn-ghost { background: var(--surface); border-color: var(--border-strong); color: var(--text); }
+.btn-ghost:hover { background: var(--surface-raised); border-color: var(--accent); color: var(--text); }
+.btn-row { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.6rem; }
+
+/* ── Section ──────────────────────────────── */
+section { padding: clamp(2rem, 5vw, 3.5rem) 0; }
+.sec-head { margin-bottom: 1.8rem; }
+.sec-head h2 { font: var(--t-h2, 700 1.6rem/1.2 inherit); letter-spacing: -.01em; }
+.sec-head p { color: var(--text-2); margin-top: .4rem; }
+
+/* ── 项目卡片网格 ──────────────────────────── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.1rem; }
+.card {
+  display: flex; flex-direction: column; gap: .65rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.3rem; transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.card:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
+.card .icon { font-size: 1.6rem; line-height: 1; }
+.card h3 { font-size: 1.12rem; display: flex; align-items: center; gap: .5rem; }
+.card p { color: var(--text-2); font-size: .93rem; flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+.tag {
+  font-size: .72rem; color: var(--text-2); background: var(--bg-tint-2);
+  border-radius: 7px; padding: .2rem .5rem; font-family: var(--font-mono, ui-monospace, monospace);
+}
+.card .links { display: flex; gap: .9rem; font-size: .85rem; margin-top: .2rem; }
+.card .links a { font-weight: 600; }
+.card-live { position: relative; }
+.card-live::after {
+  content: "LIVE"; position: absolute; top: 1rem; right: 1rem;
+  font-size: .62rem; font-weight: 700; letter-spacing: .08em;
+  color: var(--success); background: var(--success-soft);
+  padding: .12rem .4rem; border-radius: 7px;
+}
+
+/* ── 页脚 ─────────────────────────────────── */
+footer { margin-top: auto; border-top: 1px solid var(--border); padding: 2rem 0; color: var(--text-3); font-size: .88rem; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; align-items: center; }
+footer .spacer { flex: 1; }
+footer a { color: var(--text-2); }
+
+/* ── 项目页：返回条 / 演示区 ───────────────── */
+.back { display: inline-flex; align-items: center; gap: .35rem; color: var(--text-2); font-size: .9rem; margin-top: 1.5rem; }
+.feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.1rem; }
+.feature { border-left: 2px solid var(--accent-soft); padding-left: 1rem; }
+.feature h4 { font-size: 1rem; margin-bottom: .3rem; }
+.feature p { color: var(--text-2); font-size: .9rem; }
+
+pre.code {
+  background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+  padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: .85rem; color: var(--text); line-height: 1.7;
+}
+pre.code .c { color: var(--text-3); }
+
+/* ── 演示：仿聊天气泡（“抄元素”而非真功能） ──── */
+.demo-frame {
+  background: var(--bg-subtle); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.4rem; max-width: 460px;
+}
+.demo-frame .bar { display: flex; gap: .4rem; margin-bottom: 1rem; }
+.demo-frame .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); display: inline-block; }
+.bubble {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: .7rem .9rem; margin-bottom: .7rem; font-size: .9rem; max-width: 80%;
+}
+.bubble.me { background: var(--accent); color: var(--on-accent); margin-left: auto; border-color: transparent; }
+.bubble.sticker { background: transparent; border: none; padding: 0; }
+.bubble.sticker .ph {
+  width: 130px; height: 130px; border-radius: 14px; background: var(--bg-tint);
+  border: 1px dashed var(--border-strong); display: grid; place-items: center;
+  font-size: 2.4rem;
+}
+
+@media (max-width: 560px) {
+  .nav a.navlink { display: none; }
+}

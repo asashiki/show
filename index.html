@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-palette="sakura">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asashiki · 项目展示</title>
+  <meta name="description" content="浅仪式 Asashiki —— MCP 工具与小项目的在线展示。让 AI 在对话里发表情包、说话、放音乐、抽选……" />
+  <meta property="og:title" content="Asashiki · 项目展示" />
+  <meta property="og:description" content="MCP 工具与小项目的在线展示集合。" />
+  <meta property="og:type" content="website" />
+  <!-- 无闪烁：渲染前先套用记忆的主题 -->
+  <script>
+    (function () { var r = document.documentElement;
+      r.setAttribute("data-theme", localStorage.getItem("ad-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+      r.setAttribute("data-palette", localStorage.getItem("ad-palette") || "sakura"); })();
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/asashiki/asashiki-design@main/tokens/tokens.css" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="mark"><span>浅</span></span> Asashiki</a>
+      <span class="spacer"></span>
+      <a class="navlink" href="#projects">项目</a>
+      <a class="navlink" href="https://doc.asashiki.com">文档</a>
+      <a class="navlink" href="https://github.com/asashiki" target="_blank" rel="noopener">GitHub</a>
+      <div class="ctrls">
+        <button class="iconbtn" id="paletteBtn" title="切换季节配色">🌸</button>
+        <button class="iconbtn" id="themeBtn" title="切换明暗">☀️</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="glow"></div>
+    <div class="wrap">
+      <span class="eyebrow"><span>✦ 在线展示</span></span>
+      <h1>把工具，<br />放进对话里。</h1>
+      <p class="lead">浅仪式出品的一组 MCP 服务与小工具 —— 让 AI 能在聊天中发表情、说话、放音乐、抽选、看设备时间线。下面每张卡片都可点开实时演示。</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#projects">浏览项目</a>
+        <a class="btn btn-ghost" href="https://github.com/asashiki" target="_blank" rel="noopener">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 2-.27 7.64 7.64 0 0 1 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          全部仓库
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="projects">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>项目</h2>
+          <p>对话内交互（MCP Apps）为主，旁附实用小服务。带 <b style="color:var(--success)">LIVE</b> 的卡片有独立演示页。</p>
+        </div>
+        <div class="grid">
+
+          <article class="card card-live">
+            <div class="icon">🌸</div>
+            <h3>sticker-mcp</h3>
+            <p>让 AI 在对话里发表情包：内联 MCP Apps 组件 + 网页管理后台，可按心情检索、还能让 AI 自己上传新表情。</p>
+            <div class="tags"><span class="tag">mcp</span><span class="tag">mcp-apps</span><span class="tag">sticker</span></div>
+            <div class="links"><a href="/projects/sticker-mcp.html">查看演示 →</a><a href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">GitHub</a></div>
+          </article>
+
+          <article class="card">
+            <div class="icon">🔊</div>
+            <h3>voice-send-mcp</h3>
+            <p>对话内语音气泡：MiniMax / OpenAI / ElevenLabs / Edge 多家 TTS，生成可直接播放的语音组件。</p>
+            <div class="tags"><span class="tag">tts</span><span class="tag">voice</span><span class="tag">mcp-apps</span></div>
+            <div class="links"><a href="https://github.com/asashiki/voice-send-mcp" target="_blank" rel="noopener">GitHub →</a></div>
+          </article>
+
+          <article class="card">
+            <div class="icon">🎵</div>
+            <h3>music-mcp</h3>
+            <p>对话内音乐播放器：基于 Meting 源，支持搜索、歌单、同步歌词，直接在聊天里播放。</p>
+            <div class="tags"><span class="tag">music</span><span class="tag">lyrics</span><span class="tag">meting</span></div>
+            <div class="links"><a href="https://github.com/asashiki/music-mcp" target="_blank" rel="noopener">GitHub →</a></div>
+          </article>
+
+          <article class="card">
+            <div class="icon">🎰</div>
+            <h3>reel-rando-mcp</h3>
+            <p>选择困难终结者：把选项变成对话里可玩的老虎机 / 转盘 / 抽卡交互。</p>
+            <div class="tags"><span class="tag">randomizer</span><span class="tag">slot-machine</span></div>
+            <div class="links"><a href="https://github.com/asashiki/reel-rando-mcp" target="_blank" rel="noopener">GitHub →</a></div>
+          </article>
+
+          <article class="card">
+            <div class="icon">📱</div>
+            <h3>device-timeline-mcp</h3>
+            <p>Android / iOS / Windows / macOS 实时时间线上传，附测试页与 API 文档，并为各 Agent 提供 MCP 接入。</p>
+            <div class="tags"><span class="tag">android</span><span class="tag">timeline</span><span class="tag">mcp</span></div>
+            <div class="links"><a href="https://github.com/asashiki/device-timeline-mcp" target="_blank" rel="noopener">GitHub →</a></div>
+          </article>
+
+          <article class="card">
+            <div class="icon">🎬</div>
+            <h3>nico-danmaku-api</h3>
+            <p>给播放器弹幕源加一个链接，就能在 Emby 等播放器里看 niconico 弹幕。</p>
+            <div class="tags"><span class="tag">danmaku</span><span class="tag">niconico</span><span class="tag">api</span></div>
+            <div class="links"><a href="https://github.com/asashiki/nico-danmaku-api" target="_blank" rel="noopener">GitHub →</a></div>
+          </article>
+
+          <article class="card">
+            <div class="icon">🎨</div>
+            <h3>asashiki-design</h3>
+            <p>浅仪式设计系统：樱羽主视觉、四季配色、面向 AI / Agent 的通用视觉规范。本展示站即由它驱动。</p>
+            <div class="tags"><span class="tag">design-system</span><span class="tag">tokens</span><span class="tag">sakura</span></div>
+            <div class="links"><a href="https://github.com/asashiki/asashiki-design" target="_blank" rel="noopener">GitHub →</a></div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>浅仪式 Asashiki · 项目展示</span>
+      <span class="spacer"></span>
+      <a href="https://doc.asashiki.com">文档</a>
+      <a href="https://github.com/asashiki" target="_blank" rel="noopener">GitHub</a>
+      <span style="color:var(--text-3)">由 Cloudflare Pages 托管 · Asashiki Design 驱动</span>
+    </div>
+  </footer>
+
+  <script src="/assets/theme.js"></script>
+</body>
+</html>
