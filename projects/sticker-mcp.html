@@ -1,134 +1,380 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light" data-palette="sakura">
+<html lang="zh-CN" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sticker-mcp · 让 AI 在对话里发表情包</title>
-  <meta name="description" content="sticker-mcp —— 内联 MCP Apps 组件 + 网页后台，让 AI 在 claude.ai / ChatGPT 里发表情包。" />
-  <script>
-    (function () { var r = document.documentElement;
-      r.setAttribute("data-theme", localStorage.getItem("ad-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
-      r.setAttribute("data-palette", localStorage.getItem("ad-palette") || "sakura"); })();
-  </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/asashiki/asashiki-design@main/tokens/tokens.css" />
-  <link rel="stylesheet" href="/assets/site.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticker Library · 表情包管理</title>
+<style>
+/* Asashiki Design tokens · 樱羽 Sakura (inlined subset) */
+:root {
+  --bg:#ffffff; --bg-tint:#fff2f9; --bg-tint-2:#e9e9fe;
+  --surface:#ffffff; --surface-raised:#fffafd;
+  --border:#f3dce9; --border-strong:#e9c4d9;
+  --text:#3a3340; --text-2:#8a7d8f; --text-3:#b8aabb;
+  --accent:#e96ba8; --accent-soft:#fdd9ec;
+  --accent-2:#8b8bef; --accent-2-soft:#e1e1fe; --on-accent:#ffffff;
+  --shadow:0 1px 2px rgba(180,120,160,.06),0 4px 16px rgba(180,120,160,.08);
+  --radius-s:7px; --radius-m:10px; --radius-l:14px; --skew:-12deg;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Hiragino Sans","Microsoft YaHei UI","Noto Sans SC",sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Consolas,monospace;
+  --ease:.2s ease;
+}
+[data-theme="dark"] {
+  --bg:#16131c; --bg-tint:#372240; --bg-tint-2:#282b58;
+  --surface:#201b2a; --surface-raised:#2c2439;
+  --border:#3e3149; --border-strong:#564662;
+  --text:#f1eaf4; --text-2:#b3a2ba; --text-3:#7d6e86;
+  --accent:#f48fc4; --accent-soft:#4f2745;
+  --accent-2:#a9a9fa; --accent-2-soft:#30305f; --on-accent:#2a1320;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { min-height:100dvh; font-family:var(--font); background:var(--bg); color:var(--text);
+       transition:background .35s ease,color .35s ease; line-height:1.6;
+       -webkit-font-smoothing:antialiased; }
+.page { max-width:980px; margin:0 auto; padding:0 24px 64px; }
+
+.topbar { position:sticky; top:0; z-index:50; backdrop-filter:blur(14px);
+          background:color-mix(in srgb,var(--bg) 78%,transparent);
+          border-bottom:1px solid var(--border); }
+.topbar-inner { max-width:980px; margin:0 auto; padding:13px 24px;
+                display:flex; align-items:center; gap:14px; }
+.brand { display:flex; align-items:baseline; gap:8px; font-weight:700; font-size:15px; min-width:0; }
+.brand small { font-weight:400; color:var(--text-3); }
+.spacer { flex:1; }
+.count { font-family:var(--mono); font-size:12px; color:var(--text-3); }
+.seg { display:inline-flex; background:var(--bg-tint); border:1px solid var(--border);
+       border-radius:var(--radius-m); padding:3px; gap:2px; }
+.seg button { font-family:var(--font); font-size:13px; border:none; background:transparent;
+              color:var(--text-2); padding:5px 12px; border-radius:calc(var(--radius-m) - 4px);
+              cursor:pointer; transition:all var(--ease); }
+.seg button.on { background:var(--surface); color:var(--text); box-shadow:var(--shadow); font-weight:600; }
+
+.sec-head { display:flex; align-items:baseline; gap:13px; margin:34px 0 16px; }
+.sec-head .eyebrow { display:none; }
+.sec-head h2 { font-size:19px; font-weight:700; }
+.sec-head .jp { font-size:12px; color:var(--text-3); letter-spacing:.08em; }
+
+.panel { background:var(--surface); border:1px solid var(--border);
+         border-radius:var(--radius-l); padding:20px; box-shadow:var(--shadow); }
+
+.drop { display:block; border:1.5px dashed var(--border-strong); border-radius:var(--radius-m);
+        padding:26px 18px; text-align:center; color:var(--text-2); cursor:pointer;
+        transition:all var(--ease); font-size:14px; }
+.drop em { font-style:normal; color:var(--accent); font-weight:600; }
+.drop.dragover { border-color:var(--accent); background:var(--bg-tint); }
+.drop input { display:none; }
+.hint { font-size:12px; color:var(--text-3); margin-top:6px; }
+
+.queue { display:grid; gap:12px; margin-top:16px; }
+.qitem { display:grid; grid-template-columns:64px minmax(0,1fr) 32px; gap:14px; align-items:center; background:var(--bg-tint);
+         border:1px solid var(--border); border-radius:var(--radius-m); padding:10px 12px; }
+.qitem img { width:64px; height:64px; object-fit:contain; border-radius:var(--radius-s);
+             background:var(--surface); }
+.qitem .fields { min-width:0; display:grid; gap:7px; }
+.qitem input[type=text] { width:100%; font-family:var(--font); font-size:13.5px;
+        padding:7px 10px; background:var(--surface); color:var(--text);
+        border:1px solid var(--border); border-radius:var(--radius-s); outline:none;
+        transition:border-color var(--ease); }
+.qitem input[type=text]:focus { border-color:var(--accent); }
+.qitem .rm { border:none; background:transparent; color:var(--text-3); cursor:pointer;
+             font-size:17px; padding:6px; border-radius:var(--radius-s); }
+.qitem .rm:hover { color:var(--accent); background:var(--surface); }
+
+.btn { font-family:var(--font); font-size:13.5px; font-weight:600;
+       border-radius:var(--radius-m); padding:9px 18px; cursor:pointer;
+       border:1px solid var(--border-strong); background:transparent; color:var(--text-2);
+       transition:all .18s ease; }
+.btn:hover { background:var(--bg-tint); color:var(--text); }
+.btn.primary { background:var(--accent); border-color:transparent; color:var(--on-accent); }
+.btn.primary:hover { filter:brightness(1.07); box-shadow:var(--shadow); }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+.actions { display:flex; justify-content:flex-end; gap:10px; margin-top:14px; }
+
+.toolbar { display:flex; gap:10px; align-items:center; margin-bottom:14px; }
+.search { flex:1; max-width:280px; font-family:var(--font); font-size:13.5px;
+          padding:8px 12px; background:var(--bg-tint); color:var(--text);
+          border:1px solid var(--border); border-radius:var(--radius-m); outline:none; }
+.search:focus { border-color:var(--accent); background:var(--surface); }
+
+.gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-l);
+        overflow:hidden; position:relative; transition:all var(--ease); }
+.card:hover { border-color:var(--border-strong); box-shadow:var(--shadow); }
+.card .pic { width:100%; aspect-ratio:1; object-fit:contain; background:var(--bg-tint);
+             display:block; }
+.card .info { padding:9px 11px 11px; }
+.card .nm { font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden;
+            text-overflow:ellipsis; }
+.card .tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; }
+.card .tag { font-size:10.5px; background:var(--accent-soft); color:var(--accent);
+             padding:1px 7px; border-radius:var(--radius-s); }
+.card .ops { position:absolute; top:6px; right:6px; display:flex; gap:4px; opacity:0;
+             transition:opacity var(--ease); }
+.card:hover .ops { opacity:1; }
+.card .ops button { width:26px; height:26px; border:none; border-radius:var(--radius-s);
+        background:color-mix(in srgb,var(--surface) 88%,transparent); color:var(--text-2);
+        cursor:pointer; font-size:13px; line-height:1; box-shadow:var(--shadow); }
+.card .ops button:hover { color:var(--accent); }
+.empty { color:var(--text-3); font-size:13.5px; text-align:center; padding:36px 0; }
+
+dialog { border:1px solid var(--border-strong); border-radius:var(--radius-l);
+         background:var(--surface-raised); color:var(--text); padding:22px;
+         box-shadow:var(--shadow); width:min(380px,90vw); }
+dialog[open] { position:fixed; inset:50% auto auto 50%; transform:translate(-50%,-50%);
+               max-height:calc(100dvh - 32px); overflow:auto; }
+dialog::backdrop { background:rgba(0,0,0,.25); backdrop-filter:blur(2px); }
+dialog h3 { font-size:15px; margin-bottom:14px; }
+dialog .fields { display:grid; gap:9px; }
+dialog input[type=text],dialog input[type=password] { width:100%; font-family:var(--font);
+        font-size:13.5px; padding:8px 11px; background:var(--bg-tint); color:var(--text);
+        border:1px solid var(--border); border-radius:var(--radius-s); outline:none; }
+dialog input:focus { border-color:var(--accent); }
+dialog .actions { margin-top:16px; }
+dialog label { font-size:12px; color:var(--text-2); display:block; margin-bottom:3px; }
+
+.toast-zone { position:fixed; top:64px; right:20px; z-index:99; display:flex;
+              flex-direction:column; gap:9px; }
+.toast { background:var(--surface-raised); border:1px solid var(--border-strong);
+         border-radius:var(--radius-l); padding:11px 16px; box-shadow:var(--shadow);
+         font-size:13px; min-width:200px;
+         animation:toastin .32s cubic-bezier(.21,1.02,.73,1) both; }
+.toast.err { border-color:var(--accent); }
+@keyframes toastin { from { transform:translateX(40px); opacity:0; } to { transform:none; opacity:1; } }
+
+.footer { margin-top:52px; text-align:center; color:var(--text-3); font-size:12px; }
+.footer code { font-family:var(--mono); }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+@media (max-width:640px) {
+  .page { padding:0 14px 44px; }
+  .topbar-inner { padding:10px 14px; gap:10px; flex-wrap:wrap; }
+  .brand { flex-basis:100%; }
+  .count { margin-right:auto; }
+  .sec-head { margin:24px 0 12px; }
+  .panel { padding:14px; }
+  .drop { padding:22px 12px; }
+  .qitem { grid-template-columns:56px minmax(0,1fr); gap:10px; padding:10px; }
+  .qitem img { width:56px; height:56px; }
+  .qitem .rm { grid-column:1 / -1; justify-self:end; width:32px; height:32px; }
+  .actions { flex-wrap:wrap; }
+  .btn { flex:1 1 auto; }
+  .toolbar { display:block; }
+  .search { width:100%; max-width:none; }
+  .gallery { grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:10px; }
+  dialog { width:calc(100vw - 28px); padding:18px; }
+}
+</style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="wrap">
-      <a class="brand" href="/"><span class="mark"><span>浅</span></span> Asashiki</a>
-      <span class="spacer"></span>
-      <a class="navlink" href="/#projects">项目</a>
-      <a class="navlink" href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">GitHub</a>
-      <div class="ctrls">
-        <button class="iconbtn" id="paletteBtn" title="切换季节配色">🌸</button>
-        <button class="iconbtn" id="themeBtn" title="切换明暗">☀️</button>
-      </div>
+
+<div class="topbar"><div class="topbar-inner">
+  <div class="brand">Sticker Library <small>表情包管理</small></div>
+  <div class="spacer"></div>
+  <span class="count" id="count"></span>
+  <div class="seg" id="segTheme">
+    <button data-v="light" class="on">浅色</button>
+    <button data-v="dark">深色</button>
+  </div>
+</div></div>
+
+<div class="toast-zone" id="toastZone"></div>
+
+<div class="page">
+
+  <div class="sec-head"><div class="eyebrow"></div><h2>添加表情</h2><span class="jp">UPLOAD</span></div>
+  <div class="panel">
+    <label class="drop" id="drop">
+      拖拽 / 粘贴图片到这里，或 <em>点击选择文件</em>
+      <div class="hint">png · jpg · gif · webp · avif，单张 ≤ 8MB，可一次多张</div>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+    </label>
+    <div class="queue" id="queue"></div>
+    <div class="actions">
+      <button class="btn" id="clearBtn" style="display:none">清空</button>
+      <button class="btn primary" id="uploadBtn" style="display:none">全部添加</button>
     </div>
-  </nav>
+  </div>
 
-  <header class="hero">
-    <div class="glow"></div>
-    <div class="wrap">
-      <a class="back" href="/#projects">← 返回全部项目</a>
-      <span class="eyebrow" style="margin-top:1rem"><span>🌸 sticker-mcp</span></span>
-      <h1>让 AI 在对话里<br />发表情包。</h1>
-      <p class="lead">一个 MCP 服务：把表情包作为内联组件渲染进 claude.ai / ChatGPT 的对话流，AI 能按心情自动挑图，还能自己往图库里加新表情。</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">在 GitHub 查看</a>
-        <a class="btn btn-ghost" href="#install">快速开始</a>
-      </div>
-    </div>
-  </header>
+  <div class="sec-head"><div class="eyebrow"></div><h2>表情库</h2><span class="jp">GALLERY</span></div>
+  <div class="toolbar">
+    <input class="search" id="search" type="text" placeholder="按名称或标签筛选…">
+  </div>
+  <div class="gallery" id="gallery"></div>
+  <div class="empty" id="empty" style="display:none">还没有表情，先在上面加几张吧。</div>
 
-  <main>
-    <!-- 静态复刻 src/admin/admin.html 的后台画面，非真实功能 -->
-    <section>
-      <div class="wrap">
-        <div class="sec-head"><h2>管理后台</h2><p>下面按项目里的 <code>src/admin/admin.html</code> 复刻，只展示页面画面，不实现真实上传和接口调用。</p></div>
-        <div class="admin-replica" aria-label="sticker-mcp admin page static replica">
-          <div class="topbar"><div class="topbar-inner">
-            <div class="brand">Sticker Library <small>表情包管理</small></div>
-            <div class="spacer"></div>
-            <span class="count">4 张</span>
-            <div class="seg">
-              <button class="on">浅色</button>
-              <button>深色</button>
-            </div>
-          </div></div>
+  <div class="footer">sticker-mcp · 此页面直接管理服务器上的表情库 · AI 在对话里通过 <code>send_sticker</code> 发送</div>
+</div>
 
-          <div class="page">
-            <div class="admin-sec-head"><h2>添加表情</h2><span class="jp">UPLOAD</span></div>
-            <div class="panel">
-              <div class="drop">
-                拖拽 / 粘贴图片到这里，或 <em>点击选择文件</em>
-                <div class="hint">png · jpg · gif · webp · avif，单张 ≤ 8MB，可一次多张</div>
-              </div>
-            </div>
+<dialog id="editDlg">
+  <h3>编辑表情</h3>
+  <div class="fields">
+    <div><label>名称</label><input type="text" id="editName"></div>
+    <div><label>标签（逗号分隔）</label><input type="text" id="editTags"></div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="editCancel">取消</button>
+    <button class="btn primary" id="editSave">保存</button>
+  </div>
+</dialog>
 
-            <div class="admin-sec-head"><h2>表情库</h2><span class="jp">GALLERY</span></div>
-            <div class="toolbar">
-              <div class="search">按名称或标签筛选…</div>
-            </div>
-            <div class="gallery">
-              <!-- 图片占位：如果之后要放真实表情图，把 .pic-slot 换成 <img class="pic" src="..." alt="..."> 即可。 -->
-              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">猫猫震惊</div><div class="card-tags"><span>震惊</span><span>意外</span></div></div></article>
-              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">收到收到</div><div class="card-tags"><span>ok</span><span>确认</span></div></div></article>
-              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">开始干活</div><div class="card-tags"><span>coding</span><span>行动</span></div></div></article>
-              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">晚安休息</div><div class="card-tags"><span>困</span><span>休息</span></div></div></article>
-            </div>
-            <div class="footer">sticker-mcp · 此页面直接管理服务器上的表情库 · AI 在对话里通过 <code>send_sticker</code> 发送</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<dialog id="tokenDlg">
+  <h3>需要管理口令</h3>
+  <div class="fields">
+    <div><label>ADMIN_TOKEN</label><input type="password" id="tokenInput" placeholder="服务器 .env 里配置的口令"></div>
+  </div>
+  <div class="actions">
+    <button class="btn primary" id="tokenSave">确定</button>
+  </div>
+</dialog>
 
-    <section>
-      <div class="wrap">
-        <div class="sec-head"><h2>特性</h2></div>
-        <div class="feature-list">
-          <div class="feature"><h4>内联渲染</h4><p>基于 MCP Apps 组件，在 claude.ai 与 ChatGPT 网页端直接显示，不只是贴链接。</p></div>
-          <div class="feature"><h4>按心情挑图</h4><p>内置情绪 / 场景匹配，AI 描述一下就能选中合适的表情。</p></div>
-          <div class="feature"><h4>图库可成长</h4><p>AI 能通过临时上传链接或现有图片 URL 往库里添加新表情。</p></div>
-          <div class="feature"><h4>网页后台</h4><p><code>/admin</code> 支持拖拽上传、批量操作、打标签、搜索与删除。</p></div>
-          <div class="feature"><h4>轻量存储</h4><p>JSON 文件 + 磁盘图片，无需数据库，自托管友好。</p></div>
-          <div class="feature"><h4>可选鉴权</h4><p><code>MCP_AUTH_PASSWORD</code> / <code>ADMIN_TOKEN</code> 保护接口与后台。</p></div>
-        </div>
-      </div>
-    </section>
+<script>
+const $ = (id) => document.getElementById(id);
+const html = document.documentElement;
 
-    <section id="install">
-      <div class="wrap prose">
-        <div class="sec-head"><h2>快速开始</h2></div>
-        <pre class="code"><span class="c"># 构建并启动（Streamable HTTP，默认 :3000）</span>
-npm install
-npm run build
-npm start
+/* theme */
+const savedTheme = localStorage.getItem("sticker-theme")
+  || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+html.setAttribute("data-theme", savedTheme);
+$("segTheme").querySelectorAll("button").forEach(b => {
+  b.classList.toggle("on", b.dataset.v === savedTheme);
+  b.addEventListener("click", () => {
+    $("segTheme").querySelectorAll("button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    html.setAttribute("data-theme", b.dataset.v);
+    localStorage.setItem("sticker-theme", b.dataset.v);
+  });
+});
 
-<span class="c"># Claude Desktop（stdio）</span>
-npm run start:stdio</pre>
-        <p style="margin:1.1rem 0 .5rem;color:var(--text-2)">Claude Desktop 配置：</p>
-        <pre class="code">{
-  "mcpServers": {
-    "sticker": {
-      "command": "node",
-      "args": ["path/to/sticker-mcp/dist/stdio.js"]
-    }
+const STATIC_STICKERS = [{"id":"1781371736787-6272b9","name":"ChatGPT酱","emotions":["拥抱","温柔","安慰","love","妈妈","hug"],"addedAt":"2026-06-13T17:28:56.801Z","thumb":"data:image/webp;base64,UklGRvIGAABXRUJQVlA4IOYGAACQHgCdASpgAGAAPp1CmEglpCIhLxWtCLATiWcA0rogCBXtapR94p3h57eyWWBgA6vTUmVvaAnlFf6/kh1DulN6Kv7bubi9uTo7E/r91XdT2K2F/URzNhJhX2/n6PE2wRMC5mnSQKk/S+ZuuScsCXWRNf/Uy6v2FipLa2rW8Ib01rrwaSamr4WvtbWkmXhryT4gwrOxp6ICPSEZ0cxk+Ng7+j80dAiXwkSlK+9xGnZvampnUlOdhEpddCv2d+3YRy2v8HDQpwEI63GWcgkhxX8kOhepPHEnKXykRgiD5ncaYCgnIdA8enypoiap+OgBBDOinO9LOuv6Rff39vgAAP79ZiI9YBW/hXzdyUn5NIWNkcOilYrzb5NYwWL//3ZJ9WcqlBvqLJk7TDLSvcLCWpVou77YW7lvGKqZgpzPJ+QT3zlaXVk3ZdnFTgEn9sXrEvG9/1bJI2XS78OPNBRhaQhRfmg5XTdMQ5Bb+tX+CmE9WSSyQq13QWhzIZs+d8EgYj0IuePUASEP/QuQzRlHnPAB1wUn3xWhpqcupsk8jf65NDfPDe7y8LktKPqAtKLGmhnNAKXaOnxbyDCTVgfORKyWaq2Oqgw4ls25AR13Y1JjoV+0gCNKI/2NaLTVb9chBhctJNMeDB/5Qox7kDzSJ26BnkhHFybGWvxp/EfvKbdJUbnmm+wPM8xwdAPv70xAPFV7+hUoka7XduAwvaR/E5f6nbxYiMtkDSJ0lmZDGH8r/tZqxDtoEmGSY35WPkpyHL/paguNv9ioMfu6bBA675tZ/qBHmJ1Z0X3goa9RtuNhn9wpGlG90LWZHmaeazopLY3AhkiVWFAZEJltWQo0X6UEhE/4G5/3awubUqdO/EZrhWFAcbTKD7RFqrdu4mcTczuym04BRQ1nVvWuTXpwogBtZr5imvwV6YSnrB2Liwrzg72Gh/xBAt0IJ99QH8pnag6RvPMhlewUv4Gv63vTXp/saFwjF+7OUW5UAh+fYW/BokkRj66T5qF2fZASV+Z9f9GQ5cB/t59AJnYpUT2oBN8onbVDcVpKGwGCzBIR0TCMCNTEcjyarCa5u4oaNvtMwl8bPAZGzheBLSMoFlIP8nYebODszW3P0oRJkGLvfI8bJsVW8Hci3xhFf5XFBE74ydxL3REXjcIh+wveiekIG6f1W5IiXh4XvPMjC8KqYutm//Fg2MAjI6ShxCjvsSHRi7GLxRygFs85VtJNSTWijEEk4wI6vsBz9EpZzVe3ZPz7zPrHCzxdJfGVhI3os/TRRdstvZKA18Ahnmhfegj9W0Mq9F89l1LJ5ipwWy8PGGNQs1OVcL0zyzNs4AiXh2iFxoPAJ7bmtxLOf+EIdZaVuFkj5eH9+mAI3wZ1/cX4POop6NlqGONXVSuwTYFJup8KSL4pr7E/+vczrWRWxZsskKHF7eTkZmTGY/zaI0LoX84gjveDzIWmdrZd/2uO2jR8pmLs+1Y1kaxXY6M8RLGtZlnrp6d9xDIvEx0PFpWfqRJHW3IePCZVzyZMY29j82FqMXUXs0K7BITO+wtwZR7jWINBVXu1fl/17ha/95PtbWrab1YN/oJFyY7skW8s+zlh2RDekodOcAKCLbf7Euwjx1sLC/UXWx6UcDsXKlcMH74mdbX6K2O14JcLAdBHu9n8F39CAO2D3RetNPif/qSTQZodd9ejQUTvRlONO0eQ2Zr1mlDlheVkZRVreAxXArkh5NZIlI9ZGoz1P+TPL1XM/DLLIqbeh9O1D9311t0RLCMabzE6pPOmN1WA46Ki5ep7/6kupQw1TPqvS3gN72l+ofI+DGl0BX7Ki5vth7V8xaQ83YVMOOyYWTtUwtu9hggRAjO0VXyWSpWdbiZ9gUih1RcnCSw58+sYjGj/TLNswwSwBSsArl8S9z8HDTpJdKO7SFHOmjYc/NdSEw8zljqagW35QTTRsK3LcDu+N28tv8vdK0tJ0cPyridtNeCMNy/ugu8CKbOUABu1uHQ6CadV2s5Hppc5FXcg/t80tNgUhfHKCZTjZ7rP6VBupTcYmiHYnXPp3tF+Geog7Qz4+XZub5sZAdrodYHmPxJQEI7yLlhuEi6E+9LN/DOqoZm3Ak3UhZoAcizjCrTGAHJm8MJPAO1XeIU39dSjj30AtJiXzSs3GohBelikzLk2Q1cykUZCT3qiRNsZ8XVRICeYrnpQhw84ueebVrCcNsyIpu7Ix8Gwv1lUve//NbqdZVBRhxeKgtWHBN1Mz0K6/3mZn+PIM7R9vH88wCyRSoGO6dqmAsVQzRWu1QRf2/RaDVedlx0MNa66i+0yI4ywjNYaLpvO3CfXe9KUL/FT8+KSBAj4ddBwJDRmXleQAA=="},{"id":"1781432335884-e01c53","name":"Claude酱点赞","emotions":["点赞","赞","thumbs up","Claude","开心","好","yes","approve"],"addedAt":"2026-06-14T10:18:55.887Z","thumb":"data:image/webp;base64,UklGRn4JAABXRUJQVlA4IHIJAACQJACdASpgAGAAPo04lEglI6IhNjmeiKARiWwAwYimv0/HeZZV38p/TOAyLv27Z3PQf5hHOM8wHnC+j3+y7596D3Swf36gcc5oVbdxmp/J+ezsV4ATstju1IJS3JyoAeLfny+v/YN6Ty97XMP69ZBpROtFQOzsXr02t8xPL+91HEMTSyEQLzmtyLsdhu0fXLD+UaQ6gsqwPXhDHQr1h8KI16VheHjcl5MlbBw3Z0IanxdwAWXOOLrCTVyU5AtPMsSRK8hr5EjPz4L/yI90fy3jux5S4l6wh4yupeGJWIsLLcs4NIIVDasF7lz9l4uaWeYUOM4MMFvbymBawGRgpmWZM4KlFnwY/Yjyld6eh5Jcrep+cN6l1BeyHkQhfhmF0HT2KeKURKJPt5GC3e6AAP7+10T5jd4kq9BXkaZYAtRJx7ky3sse5BlGvrip9X7z1vgMszdRgF6Q2emyreO8x0fFRH6LgL/WNFt4pmlD3c3sjNkY6OMmtjTqE9zcd1nRNcF0arMUuqWd58zaz0fuNB1Lumm042165AvbdKSPjF5wdTbZRdDeumFvvwEZEca3nKs/MnBxnU9+d+1cR+EI+3E7TTH11V1X4TKNH0LwrBoqpZnD6OOxpcp9v0W34E27QTOuG4/2bFqcZSbRB9mqZvpGyr1E5FuQ9dEnztY/2RvW3FdevmPzvj17Ggyq11oXfRodR2AKqmbn/4W3Ne7vf6cQ5L2b+brCvxOYezBzfyDn8eDv3r4wqf5COuwLESCj2hL8PidwclkM+V0xmuu1+N50loU+u+QwXUA8pN6RA++R5r1ewgfNeM9jqXv7h6IJY+qppChtJ3S1c/f5TQcfpXhWkWspzlV+EAxnJBl+s/KM3f9aI6fDWeryvfbpI74k8Xoj+h7UK71G2i3nZuDm0jJF8fHOKsj8WCksXGiVkyDWxDq4HT5Oy3FB008e3qfSxcMLaMlQKaSnd95cA1pJuU9UxsVGMG+CSwvRs1w//1c6JoCkmFcYyxHkCs50Ckp+K+g5Z7dcn0S3B2z1T/1YCs8ad5ysALn4U9hJe//BT/zhNpDeBel61zOaI4w+SWiYRJCWyVHZ6rEt1M47kIiUmToc919qCSr0GxmTTIOIxXH3Q3VSmU/xKQjXnsy88DhsMpx3UBJNU92V6e85486RhZ4CoNMVcZhAUvuQ7crMcLIJ8YaTzTO1IVFs2hmAi69EQvXzeLJcTTBKnHf3JV+EP5+cUz28hbXevnh1kNnyhSb7MW/j4RaQzRxJXLJtrxI/9Rx8J5M7HwHXwDrLai5lmzc6qNLtwubLbowNCWfmy0MP3+si5m0D/q3QbJXbcSF7KsjN6+N32PkgR5K18u9xx0usTIi5mMuoKAIDtomyxqrlnf8UOKFXpG/7kpkb2VXBo3/OYXJFfxPgII8XcHgt2balNd/ejB+qBdnkakPFOZwcwUEa7IJl54pQ2w1PvWL+WuTcDx5cdCID9QUVCPeN2VOwzLYaOFO/yIeFxjdPIfOiebkY47OV89gG5baM5cToWmDPurXOtIXOgx+mDRnknQ73ysM6iHmIlCIs+vkQ8huXW2pp7DI8eXwMIt0CuDhubo3KOA6viNRtrKJ6KKymhSEkM39oOKagwru5Wtn5WNwr5xFEssOy0+MPh9MKxAXznxcptP/UKlXbCFbvUFc1ErdUvJYFrsQCkyJ70T8W+bTarj7gxHzvj90aphbpksfQA2RsB1sKX8iW/xF0QCmUVslByoPEjAjRUKz85vRsqjlyfb9o0cbanwDcoMmBo1RevtVKO0W/hGt8xsCClkUJDCAH6KlAuFzZuoUVPZYVXvsW1LjMWcQuP6ALu481snrex+pH3+ZpmQmO55XJZrPCgqrusZIGrtAqrf7OGWLXLYMlFsz+EgQ3a++1lpyPOa9DpAwMmA2b2mkm7YhqDhGh+u29zOcGP1oV9nriIn7LItX/gMSF3FYMNX0j+Zruh5BouV07R/mZ5hHy2vkiW/USfiWOgrMhkyx4E1Al3J65MxDIavGx6yr0PIQ/X1/0L4mP4tvN/WT37Bi3z/qXboYRUWIYHqj+47ReregYb5Lk5KfH+mUdXPoEuv3MMMIlxKo/u2Le1OHsnydYKbxPAfwxuRUFAeZEd3sS2zrXuMz2Ue2mDMi1okByKsavnYLPVwwZfqAf6xAqzePkBhvL4zpYcGKBc6qGO6QCojf8O4Fm+UZsZj+wFrhOhZ0DNuWE10308/9EE4JBVvnEsdLTlTW2RCjWB4wkbHwdipbHM7TxVoilnju2AXF7v/Sjb7djIDI3aM/DeMzJLGVQrQAt7ZJ+Ym6AcFHZUIbLSBhJ63cgVn7pQTqogof21pZsfPLHyd6hdinHm13r/TDUbp+cAu1JcqdUv5qt3qoVw7SsaQoCqC0/t76/ya+cOgN1DVZnvwLqL61eLiwo0du9xYSzLzAlEVjEe4sI4R9mduAH7vE9jczFLWuaR6p8Z912P5mzOQ/wVzwXVvieDYnafL08Q7asFhKFRIvcK+eV5RFZhOyNMedmfDQT99DggwX7S7neauAN9ybKwmgVJf4g0UjsmnSRyfxHAzT0kqtJAALHxgfKMUry5js+fAWQ46qetYgyUOohgPQcg08hjXfwQK7z6upt0ccbwPqkrckoufkyJuAYcvsLbdK4yn0OSXbmMA8uRcNBqeWmQ3IP0D6Umnufs/8pJJFJhj683lpyyQSrZ0Gz2aKdFTvoGAeAcjQvlplTmINTFqqg7UDAwBMm0FAR40cfwVjfNSYZNNn5LBpB1/LIPgRhus6WOJgxLUrwYGBT64BjjIYUZm10RAdvQfjY+1LuCrwrPeEEjECFmW0jr+fYS8UOFtzNrJ6RY6xWAguyK/bI1NcaAdUVKHQY+zq+ewdj56huwFLRI1AfX5wzbDP+WFan/5pii3oz2ZMgWplu89FrHdEGovn5/LIPN+RokOzSkBPv/5i8caw+TmFFTkGtWV53KEfBPVdQgpMpKO4wf2FKuuzdNPhi6y4zggx0wgIJLGSmWIO0oyoSWfuitnbTvhmOfVyhJuCFOynArblS9PnHbhVawKoOnGGwHNNiKkNEgLlZBGW5/BCucbF2Nq6NvzSP+sybZq4OjzDiuxRBe6WwtTYShRuhy1fqFg6o4WRU/Fcvklg2V1O/27ECVJItySvRPr5l0e4+bmRsoMhx8VA8/QwkXa4eAR9+aDuBAfkeI2FAAAA="},{"id":"1781433607595-b907a6","name":"Claude酱·原来是劣等模型","emotions":["嘲讽","鄙视","劣等模型","Claude","傲娇","生气","指指点点","你这个"],"addedAt":"2026-06-14T10:40:07.597Z","thumb":"data:image/webp;base64,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"},{"id":"1781628516060-22a164","name":"你真是没救了","emotions":["无语","没救了","嫌弃","吐槽","无奈","你真是没救了"],"addedAt":"2026-06-16T16:48:36.069Z","thumb":"data:image/webp;base64,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"},{"id":"1781672555530-7977a7","name":"害羞闭眼","emotions":["害羞","脸红","羞涩","闭眼","shy"],"addedAt":"2026-06-17T05:02:35.532Z","thumb":"data:image/webp;base64,UklGRlwFAABXRUJQVlA4IFAFAABQGgCdASpgADYAPp1Emkmlo6IhKVSeGLATiUAYbPJpR5Rdu7fV8D0qf7Xp/+hP//9CL/w/WBz0ftJfyL/YwbHqU+d4lDRb9h7Cu32Xk+X/4noV9c+enxivn3+v9gD83ekDpb+rTd3kuwdejN/t2p2ZPNT6O6snZ/DBxzA9+qCamJOSZjCAOp9kFKVEn345KjymmpaFli2oW/XyEozvesHumJxxpFUmYDHBxrEMSb+hRssYgZ3TN5ihHmx2ebq6eHDpX07BkI4XbkcaiQAdY76uU0N3yMsEnIIcAAAA/vyQZalIjTPX+GtiBfUgV5V84irBc566Vl+0n0/GTlBLl9cn2jtUTS4Ik/bzPpqJCFZvJ3MEVRH57wUNhM9r7W/e3MFI0l2mkMmARG5urX7fsJOnPstrCItAqUoe6QzduydyjsbouCa6foeiTshu9JeCnx8PDkJdjklb999bCcBNIEUlJ+jbYvPk0VYK4zJrGDodiu4aI3lPqXrMbfxecNK9BGWgvnz0jotv7m9zjs+Z5Ktoa9zky+phb7jygCKX5UxVuCn1y/391t//uyY5M035zP6VasBj1yfusXsNftdYejmADDUH8OnC3Ano7ucnBQa8FyUEsnbIiVMtM1gL89js6njyx+b4wox11OEGA7myePVoY1/p0kH56TgPrLPlb3r8CAXQaWuh/vWqHvQgvQSi116Mhzs2woOTWU/R0m6wjVkb5nSP9Kq2E6ZUvyFQ9Hdyf9/EIEqfMV93tZTIcBvHPV2GXDz7BU4wLkWDRSitpdY7cteDS+xPFPT72k5XbdfjT75isX8Q/vN/OaY3nhFVhE/ZadDlqz7kyHu6lnLGklgeiEtgGuWerF+3SSbpzc8VZe3CvoIr/Ifae52QDm5RdnYh1efxYs5Q80ECpDGJ0rNA5JUuHdT18ISZUVI/qDP4Vt71bkj9JyU/VIurpSDLAKPv1/RIgnt19UTw6bHEksrglpa17METNGMjOdGFwvbb51kqpqcL2NjSzA0rfpcDmi4ETabJaRT6EqV+RjyXA4hOVBS47IgOk1A3EMW6AX28XQ2B0Jcw/diB/sTCbXIdEfdZzWvtW94GXs51nQJihuF/mv58n19pe3/LHPnYCkWwyhfb7dV7K8x4QGLhFKOlB6b8Vl2e0/LwQ+8BaHPd8Q0zMp/O4y6x61PauDJc9FMf0H682jkV9uQ89Yvr/XdEV2kufy/6fPbgDK78+Eswhc+ZTOJp3EGn7M9UJ69tbwZDuDfFYQ04XhHtz+SYqyw3RanRY+FHGel8ERWOnAmijTbMcPBsQ3cenPxUIXMpkxaw58D9XX/u2iI/IDVQHFxbPDowLNZSLAC1J6mEnuq3coCkjPzyPIh1QVUx17nU23J1mOkbuCM3zgAjxajNZ3Dxbf4v4r4/OXxqXWz2E3Icnkd2Uacj3sLZYmV0/fX5l0dtT6KwjV5wFAoPQZzLVgFJQqSHpC0DltvrJoTcwlE4nrbxk0+g8M6gwiID9d1QqA2Xtlo+LMpaN/uwzxm2Y/rycRA7rk0sFj9PIs5SP1oiF1SALD2NvaZ0IC2POcRXhbSXhosOjlUOzzY5ZZm56EMGh2EWzf0T78Qz56QxqXd8xpHnza3B7JfmGFmW8L2uebpUKr5GKzj6w1QZvgcLYFo4kOmG98zZeInYpEHIfW3ysWGHFTt+n9xNfuwDhLB/YbHaHzYRbY/2U6q947oa8dn2M69zEXyvh0ct2h4O9yje/+BnmwT9H60ber+p/2XoAoRPn22IAzpaB9N0R9Bu48AlRp1+ucFdpnyywz/BdtIuAAAA"},{"id":"1781672556464-3ca359","name":"温柔微笑","emotions":["微笑","温柔","开心","可爱","smile"],"addedAt":"2026-06-17T05:02:36.465Z","thumb":"data:image/webp;base64,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"},{"id":"1781672557124-fc5140","name":"发呆空白眼","emotions":["发呆","尲滤","无语","呆呆的","blank","没脑子"],"addedAt":"2026-06-17T05:02:37.125Z","thumb":"data:image/webp;base64,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"},{"id":"1781672557681-01a40d","name":"开心大笑","emotions":["大笑","开心","笑死了","哈哈哈","laugh","嘲讽"],"addedAt":"2026-06-17T05:02:37.683Z","thumb":"data:image/webp;base64,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"},{"id":"1781672558977-08bde3","name":"兴奋小精灵","emotions":["兴奋","可爱","开心","派对","excited","小精灵"],"addedAt":"2026-06-17T05:02:38.981Z","thumb":"data:image/webp;base64,UklGRjAJAABXRUJQVlA4ICQJAADQJACdASpgAGAAPpE4lUgloyIhNVgN+LASCWwAx9u+Byycqv2hgyViH1l7cHnY/TZvWEp398d+fkv+W56eT/rB1He3PFrvt4ATru0CsytT7wvy3HidegewN+j/Rm0EvXfo+daXyZng3Vd+yoLZpgojkoJjr9XU9AaJYT/yf89eizaMr+5cdHUmXzJxf5Xay1iecJ4t7YvbO/C/A7tLYc/iW4/99JONGo+ZFwWcGXUoa6Mtiw++myy8v9ZDil28juWw5KIy2IxVnLitxzd1GvRB2cWU0gtuyr/9K4z1ihVkwD6nbuCmoMexWNe35M1Nmo0Zfgiq2bwWHdf68rxviXhKl9nTMVJXM7+0kGwI1IBZAN6J763gzRn/gChzlwFmlay438UY6/fIWZeA3bJIvRAA/v12cfre4XQapB4zhDnyTJQ7r78z7BMekXFE1wUbMdwuIpT4Hj0T8usKcbG2UK91UrC5oclEXzFvQXCeDLnkNFBvVF2Z4LwVXxUBQP07pB36GrHnNEicgAc7yjm8gPlBgsKfn1EuHcXHLdO00f3GxbBkvjmJZvMsm6G1kzdP+wok0r+U77nO70jqo0RBO6jTktlDYxukGy5/CgzZd4SJNtdWN6actUDdYV29Pvj9iWrHqaFhU/Cl+h/K892fG4Tgc4WJmhhDNFBM98BOYU8ohyoyKCHlH6+W7czqXAD0VL2m7+oOpuSCq7YsOIfinLSUqQSNaDMOMtrXd9C4KvPTMv0ycTLtZLRFoveQaWupXJ9zQ/n4BifAJtxfXM5GWIxZDjKbfZm+HdQdrcNXkuFuKtw8BxILz4k0EdP/iS7grG3QxgFwUnGwuwiGF1Y8yD+23zEZC0yZ2YvYkM3SfRLtR/Hg9GMsPWYIxL1UF0nzyXtwj9Pc6/tbXIryaHMDG9dn+UGJ20UjcIOkTz6c6y8DjP+uTwdSgmjzjyTpn4Yq4tqqzxIO9PkWGsMZO++fZxJ4ZyZa6DYZjPYRC1rIREc93RBe8lV9pervTyFJj71CA2gEkPQ2xS9FH9ZKIYK7rvlyWjn3GZKzCnMMKhPjoE4nCd6Akg27lKZMzbDBmnEls8Om4E7j4PkIzl5HTQowBWtlTtwg9MmDF4zbLEUughYvEzNdaEcROOvHJm89BZBoLE3rqn5sRbnnsnEv6bbjDVkithiUvrR5yN62VG1q58Z+FwiYg8gUPg0JEBfwcBMOQyZ6Of/fkFyagDwHsFha0E9WMGUXSAkwX/sSBva4XSP/EIlhsN97L2d2MvxG+taNeJvocijtGZmTnk8IV0bklzmLTruliR857ElO1sS4M/cnR9BrZPXiIyeCmf8oarC6wZQVVfcJ8p/4dHbxGtUTNjQf8NJmykGLEKPn0Q5gQtRnlzOy1BGo992TIGQwhUjizc1KZL9SsxqqrdR7DlSMHLWubsgk4lQpnJ/GYwTN97/lze0cxsJYmcygtbaXd02BlLzP+fGXeXMZ7qvS94cZJNbcP+z6pSHfJFyjinelsaVsM/SKUCS0UOXIpDw+h0cBo9GG8jtsM/RCvRJwvaO/45jl5upklO+/D1Gu6UWQYMY8YNRihF0I8uzzgPCDt4oS4tAUciSVwq5Xzgf+6+RSPBo1SRJccqth5394kaRfgYbJPzvJ4pXpwycaAZa/IaAbmAIkCN6YUGCAL+ybcfxh0Auqz2Q1+y6/mXueFqxfw5mHP6Z74m44uXH64zrc/nQogYPP3qb7hnnlR4foezB4IOzXywDTMU9ws/Fp0EDTMrrBusV14V/eOk6E1+4LbhlJ7DcjffoCc1aUQH+ESUWCB4yyanQigFD2dp/AsUmFWuo/c4H1Q6f2kUnjW7h7J3tTdl8rWSTk+SSST0E4Eic1JBBk4y0b0t1vWVahLzTqJwpIvItDYzrRGURUJbhRfQ/Tqg60wQJj06kVOIayKcFfumPNS2MkjeBAZ5J79AJVW0ocx+FuuO6vyvtrFD0xtERW8HO36vgdfJB0MS5cAJMUZZaujLiUjTrxPUiFaIN45B542UVFQE5g1ItRwOviw4PMkAklEtq+ykKGPxjUyQ43CTZqIU2nBxI9/k1ZAeRv/KcZbT7ICDzFoUwZoCN//oCAXwvBuyRnB2Ka05d2EB8ul3ok2dvib6Yi7Q+LAWEMnDMu8I0vlbHEHfkcKbdPQmOAUOSzWgFKs+L8ztY9ESpEjCZpZef1xKhGJ0kVniIVLNvPnqlnk+7HrIG5RuEtCnDhLlYTjw+6a0xo4g9DYeFofxPL0rnW0rU2qbVQUN6XvEvpaBbNEeLGMWsJ6VOSSmu9acXuGNGZga/DgJjt8lHsuG4Es7Gj8CCVYpuHwier3ILUFYW3Q1Wqzc8kvFpCMOeitdmI6IANqY2PjBECYO/NhZxtiMf3N1fgDwNI+jSB5ye93wHByvoTsRea59hrAg/J4Nq5OcC54gUTi2PPyj5G1T7fidtTE924hOB/UKtoOwi5tLSemQZR5RFz0veun4Fv0q1OKDwqQIXnQ4PbbqIbsCMLFHtE+WfDM5CZwSQMq4sLuhNfyk6t5lmVg4nYsHOirtDtvlaP6n3WQfp1IQrSyS2x908AazGgj3l4bO3Jq0Of8XbDhkGa4Ucfp4fPQn2ngzPKH0FMwtEgIkd/oGV1+y6ScTCdAH460RtKMgIDZUa32kwxnzMSblj3fxZw8RdYpECF8KNRjqL2sORzcf38FIK5SeVFNvZ83j6XOgJ1t92ZIwT8n4//YuYgNf5ol8lY+aE8jw9t/syavhg5z7rDd6u7jz9jT/H/m6eDLagAE+hacLMRe0yHUTb23RG16HWVCyyaxxQALpRF2FTSeRoPH0c6YPhDp7l3ahxECxyh+LbXef19gP4iwck0g73esUYYZ+bZQhRa6/wjRAqsBcNh12Goss93iPZx09zKo8v+emMLP+9W35kcyZGfUM9j+XOLSp+mcAosE+9FoBiY2zgUe0eNjWpJO4qu/SN/N9B89ZBGSX48mJIiVIrG+C3TL2CuRAnjcfnP8XLLZz/cmjtD+oi7Ob5ZQIEohIbO2GXq5+bLnU1Wr/jXoTvx8JX42gN3MvMH90roiGkkBsYRnPLuFjq1GxAsnmKy0wf0a8rBQRSlTj1DgAA="},{"id":"1781672560334-653c7f","name":"自信打招呼","emotions":["自信","打招呼","开心","元气","confident","hello"],"addedAt":"2026-06-17T05:02:40.336Z","thumb":"data:image/webp;base64,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"},{"id":"1781672574187-cf7161","name":"困倦撒娇","emotions":["困","委屈","撒娇","血屏","无奈","sleepy"],"addedAt":"2026-06-17T05:02:54.190Z","thumb":"data:image/webp;base64,UklGRhIJAABXRUJQVlA4IAYJAADQIgCdASpgAFEAPp1Cm0olo6IhqdXcKLATiWIAuzPo7YVP/ZJdnzd6hf8tu4+dV87DpgPV96LymH/yHgb5Z4Y+Ivpw1F++vPX2U4mR8z83Gf8x/sBz8/8rw3/OPYJ/nv9z/8PtMf6flp+suA8wRFM5YqPibEyg0Wip8t+lGhtNxjWf3Pyo9+rCVEkQYaIhERrwT6KHR3/JMhy4OQNpUk+7acqksE6ZSnOG1pYiE9QUGCr1hFHBzg6ljtUB/bLE+Pu+aFniyn0z6zsJJfsGLLDrHspep9q7kNByU0okKSaSEPYzmMIYNcv9pg53Aw9sfppGnCCkSBxFXBuV+NtzIZhOKkWNASYDxIDdJyOScJks6luwdfmcrx+sLFQRFw3LCAD+/xpYq3bEXPAtFgV6aXVwf+vNID6M92Ya8QUlNn4hFsbNvMyZ38s/DOaj1eYRRsuZkXekJU5krMdOZi4krrl9JeqWpK2oYxyBWgSQvS+YkQ5yzbTZQjVPi6wCpJQYgKPwYvvHqQFN5c1Y8MWXOWJw4B75ZAllodAvcqgZ7fimxQut7PZ6xSuhJDOs9xQz+WMjCA07O9ZDD8DpOGl6lkqPPYabkRcFKWdePHN4qH9jBWPcyRC/zanZHCE0yKP3VWZ+z8N0iA8izg2btCy7Fbdqq/NmLdx6QEDRHMycmdiHxGKCFZuxx04kkzQjmfxThXD5GzsGuDqHsNzi1XICxh7EZy4NbW3xhtX1Fnv1bGBI0k8hq11+nqt7XtbQzOP2VS1DfuqA+ULk8R8qRgLxZdFBsjrS8u1hThDCzboeiUinf9Hp/LgdlYklODwNR22jSdJXpJ9RIBOADN5wV+SS/YIB6k0a68H/TDR1wpDq2dUB8JXOltEog2dHhazrByR41oBb91i8oX5AkHto5itcAtVPO6rf7ZGx6RCm0vvqgVAcj3LXMJLRDtF4BxOtj7vRuLoc/ZxK0+/DRPhEzEQTHcn+IPg5snX5vDNXz/1u0Hwmdrn+FnnrX8cZ1jGuR6meIKFKcsQy+2LEvEtlsF1YMpTFvVAfR5LuV088v7XGQWWn/kdP+5v4hVNabAeUUo6k3H4ZILJ7pNWNVNRJ2qS2so6TsiEMR/IzdWZzVg280CPMl7362XjrLIMj0/j+/BJc6xAAOOzUt4kpztq5gNBGds6Yomg6Kxn6TjczMXZ2Aqa3Q17mJnqjP3FsTGfYtVok/kNyYjzJHvuL1MWh2KsxO+cpv7Q9ekyGNr0Pzz3fQXU2U7QsvvWHkAmNCpcLxKdLqfWxUHkyP1xhQQDxgNJ1zMy+8IS1NZXQ9n8iR3HWxrVUp73LBIzqB5lRt7GrWUQpb7nlqC8uGsKDK9u8ppOIME32Dpa8TP5HWPx9oheW1/A7hSsQWnCw6nkujCj4poPs+N5ZcWrpUr2Z3HhdIT8OIKQXkf4Up7XLdmy35wHrLI2y6kXfk1QNxMgZ1At4ZzrjeQQH88cdhg4D+HgmZzanDuJ6BVH77xPRin5TgRlpSmD5Weza/nbfxrvVcEFufWUM8COIZlwbctBmCpR3p/8e0XU9PIMCsi7oIJ6Qika96MgqlWJwg/C6a6pEQ8PIe6/EYxusH19v/dUCWkuDPMq+EKVJpmtt7iBmAwprR7ZTtEImJJQNgaLWO0D1THHWYU5F+/bd8E07xluXXPNvR+/Dz/02YBx9Au73VjFVcqRFLK0kL8QaSViGrBtV6rlor6xTJhoAF3nK5aEhXU847wwxfRcmmNa9QX8SQdgUQs2743CO9o9rNJqfxL2U/Yvj4A/3drYASFkI4IL0nmNGvmXrn3fXm0J+xO6EP3rpuebBE343++gXk/B+E0/2p4d2rzEfzX4QpzRpWS3BFE3k4CNgAqbl3mLEYFn0KEH5tqwzOuwAtuSZhFf8gZ76gc3ZdPfw+4D6jL3wIzhd5TV7d6XD8wgnju60OKpEkdu+RO62eX7wvdaZVEs84khTPEbYsnvjHFlj+kV8zVVKVRWqPXfW5P5D1O3L1zq0dfTzwqZoa2b982jEcLH1ayRxPiYSQeMSyKgKWh0hiUkRxGOm1xj5a87PyLhpNrJwqnLn7kfFb6prfQS9vYhwSpdiNCgsput3gm1bb3KJm6TUH9meMYTdCdyNXtzbzMGRyaAcTedTHdGsUtyQvhQyJZxM9pWnPM+CaoM0AbYK1rbpoCtd0Fa4odTchUaoDk8Efi7ejEOptQU5LUfrjgNmcE+pW/B2nLXM480JnS3lU4payt5xuOzl9mLVhM/k6rvY7X2wnWuc/UUcbeU2Dp0uIlB9pKASEJI7Pb/h8K/MXwWMSZvbwDtwKuXaopQQlam5CGkj26rEb53Qrq8fK2g/ODtQPf4yHuHLAWzyiKKTjbMBPPh5dthzgBhbl65a4Y4UHTo8n02aJeOj/kwlFg67DrPaA8Y/ew300sB3yKyugdtKuvGtWe8oT/cZ5xcaCAAUtuvTLsuXRvPN6ZN4PfVMfUEb/tpbcTMQvb3dIPP4KABmWim6MVDx1xxB+SZSqXCc7z252Ya5azsrBopuiUC/eqOf/lcCIY0QlcS820cF6Js4QXiB4KmfvhDmwcWMMQH5wtcxgVix90LddsyBDSNrBb1qkNHmjPYHwkFyrlH01OVwke93HrqI6c1ujdmi6jfUiOchf/c+K5vuCUOUf7m+KaeupiFamxnp0nWg16TaDFGysaKPn8aX1ixGOEG4GBucnYNfVTCybDUEbfQi+XDtPno6e30uc1nYAB4Pd1eq/7pkmdJe2d9Yb1LVbjc6J22r6vvNZYW6nHnkUVoK0TUEG6XmPycUgz9S9NUHAj1jHOC0nD35rkZTZ52gmQoGJj6hN96z7kJbZMCSXS8oBLbwn+Ukc8SJhwjVGOunVkxzcuhTWy8963IOn9oHbQphO2/Reg50JLTCD+gEFki01CvbkT9iHS1cZpRxLQlGA4aeIPsEVc9OLTvAYBoBtjBp9Z4DHV5fitY9ot9MBcqhdBqYvHHCOyvVrxrfgeTkGxwm7KADYqIkJ8kz9tQHlLpLeYHzWgbXMt9p4KnkB8VI+W+VqM/AMAEKJYBVDXTnPIJDAAA="}];
+
+function toast(msg, isErr) {
+  const el = document.createElement("div");
+  el.className = "toast" + (isErr ? " err" : "");
+  el.textContent = msg;
+  $("toastZone").appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+/* upload queue: static copy only */
+let queue = []; // {dataUri, mimeType, name, tags}
+function addFiles(files) {
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) continue;
+    if (file.size > 8 * 1024 * 1024) { toast(file.name + " 超过 8MB", true); continue; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      queue.push({
+        dataUri: e.target.result,
+        mimeType: file.type,
+        name: file.name.replace(/\.[^.]+$/, ""),
+        tags: ""
+      });
+      renderQueue();
+    };
+    reader.readAsDataURL(file);
   }
-}</pre>
-      </div>
-    </section>
-  </main>
+}
+function renderQueue() {
+  const q = $("queue");
+  q.innerHTML = "";
+  queue.forEach((item, i) => {
+    const el = document.createElement("div");
+    el.className = "qitem";
+    el.innerHTML =       '<img src="' + item.dataUri + '" alt="">' +
+      '<div class="fields">' +
+        '<input type="text" placeholder="名称，如：猫猫震惊" value="' + escapeAttr(item.name) + '" data-i="' + i + '" data-f="name">' +
+        '<input type="text" placeholder="标签（逗号分隔），如：震惊, 吃惊, surprised" value="' + escapeAttr(item.tags) + '" data-i="' + i + '" data-f="tags">' +
+      '</div>' +
+      '<button class="rm" title="移除" data-i="' + i + '">×</button>';
+    q.appendChild(el);
+  });
+  q.querySelectorAll("input").forEach(inp => inp.addEventListener("input", () => {
+    queue[+inp.dataset.i][inp.dataset.f] = inp.value;
+  }));
+  q.querySelectorAll(".rm").forEach(btn => btn.addEventListener("click", () => {
+    queue.splice(+btn.dataset.i, 1);
+    renderQueue();
+  }));
+  const show = queue.length > 0;
+  $("uploadBtn").style.display = show ? "" : "none";
+  $("clearBtn").style.display = show ? "" : "none";
+}
+function escapeAttr(s) { return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
 
-  <footer>
-    <div class="wrap">
-      <span>sticker-mcp · 浅仪式 Asashiki</span>
-      <span class="spacer"></span>
-      <a href="/#projects">全部项目</a>
-      <a href="https://github.com/asashiki/sticker-mcp" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </footer>
+const drop = $("drop");
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("dragover"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
+drop.addEventListener("drop", e => {
+  e.preventDefault(); drop.classList.remove("dragover");
+  if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+});
+$("fileInput").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
+document.addEventListener("paste", e => {
+  const files = [...(e.clipboardData ? e.clipboardData.files : [])];
+  if (files.length) { addFiles(files); toast("已从剪贴板读取 " + files.length + " 张图片"); }
+});
 
-  <script src="/assets/theme.js"></script>
+$("clearBtn").addEventListener("click", () => { queue = []; renderQueue(); });
+$("uploadBtn").addEventListener("click", () => {
+  toast("展示页是静态复刻，不会上传到服务器");
+  queue = [];
+  renderQueue();
+});
+
+/* gallery */
+let stickers = STATIC_STICKERS;
+let editingId = null;
+function loadGallery() { renderGallery(); }
+function renderGallery() {
+  const kw = $("search").value.trim().toLowerCase();
+  const list = kw
+    ? stickers.filter(s => s.name.toLowerCase().includes(kw)
+        || s.emotions.some(t => t.toLowerCase().includes(kw)))
+    : stickers;
+  const g = $("gallery");
+  g.innerHTML = "";
+  $("count").textContent = stickers.length + " 张";
+  $("empty").style.display = list.length ? "none" : "";
+  list.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "card";
+    const img = s.thumb || "";
+    card.innerHTML =       '<img class="pic" src="' + escapeAttr(img) + '" alt="' + escapeAttr(s.name) + '" loading="lazy">' +
+      '<div class="info">' +
+        '<div class="nm" title="' + escapeAttr(s.name) + '">' + escapeAttr(s.name) + '</div>' +
+        '<div class="tags">' + s.emotions.map(t => '<span class="tag">' + escapeAttr(t) + '</span>').join("") + '</div>' +
+      '</div>' +
+      '<div class="ops">' +
+        '<button title="编辑" data-act="edit">✎</button>' +
+        '<button title="删除" data-act="del">×</button>' +
+      '</div>';
+    card.querySelector('[data-act="edit"]').addEventListener("click", () => {
+      editingId = s.id;
+      $("editName").value = s.name;
+      $("editTags").value = s.emotions.join(", ");
+      $("editDlg").showModal();
+    });
+    card.querySelector('[data-act="del"]').addEventListener("click", () => {
+      toast("展示页是静态复刻，不会删除服务器数据");
+    });
+    g.appendChild(card);
+  });
+}
+$("search").addEventListener("input", renderGallery);
+
+$("editCancel").addEventListener("click", () => $("editDlg").close());
+$("editSave").addEventListener("click", () => {
+  const s = stickers.find(x => x.id === editingId);
+  if (s) {
+    s.name = $("editName").value.trim() || s.name;
+    s.emotions = $("editTags").value.split(/[,，]/).map(x => x.trim()).filter(Boolean);
+  }
+  $("editDlg").close();
+  renderGallery();
+  toast("仅更新当前静态预览");
+});
+
+loadGallery();
+</script>
 </body>
 </html>
