@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="震惊贴纸">
+  <rect width="220" height="220" rx="30" fill="#e9e9fe"/>
+  <circle cx="110" cy="116" r="62" fill="#ffffff" stroke="#8b8bef" stroke-width="5"/>
+  <circle cx="84" cy="101" r="11" fill="#3a3340"/>
+  <circle cx="136" cy="101" r="11" fill="#3a3340"/>
+  <ellipse cx="110" cy="138" rx="17" ry="23" fill="#3a3340"/>
+  <path d="M67 66l-23-22M153 66l23-22M110 48V20" fill="none" stroke="#e96ba8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M65 157c-16 6-25 16-29 30M155 157c16 6 25 16 29 30" fill="none" stroke="#8b8bef" stroke-width="7" stroke-linecap="round"/>
+</svg>

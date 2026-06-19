@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="思考贴纸">
+  <rect width="220" height="220" rx="30" fill="#fffafd"/>
+  <circle cx="103" cy="116" r="58" fill="#ffd9ec" stroke="#e96ba8" stroke-width="5"/>
+  <path d="M77 100c9-7 18-7 27 0M122 100c9-7 18-7 27 0" fill="none" stroke="#3a3340" stroke-width="7" stroke-linecap="round"/>
+  <path d="M92 138c13 8 28 8 43 0" fill="none" stroke="#3a3340" stroke-width="7" stroke-linecap="round"/>
+  <path d="M139 145c17 12 24 25 20 39" fill="none" stroke="#3a3340" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="156" cy="51" r="15" fill="#8b8bef"/>
+  <circle cx="183" cy="32" r="9" fill="#8b8bef" opacity=".7"/>
+  <circle cx="194" cy="62" r="6" fill="#e96ba8"/>
+</svg>

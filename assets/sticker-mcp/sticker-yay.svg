@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="撒花贴纸">
+  <rect width="220" height="220" rx="30" fill="#fff2f9"/>
+  <circle cx="110" cy="112" r="62" fill="#ffd9ec" stroke="#e96ba8" stroke-width="5"/>
+  <path d="M72 100c12-13 25-13 38 0M110 100c12-13 25-13 38 0" fill="none" stroke="#3a3340" stroke-width="8" stroke-linecap="round"/>
+  <path d="M82 128c18 21 38 21 56 0" fill="none" stroke="#3a3340" stroke-width="8" stroke-linecap="round"/>
+  <path d="M36 58l18 8-16 10M178 50l-8 18 20-2M46 166l20-3-9 17M174 166l-18-11 20-8" fill="none" stroke="#8b8bef" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="57" cy="44" r="7" fill="#e96ba8"/>
+  <circle cx="166" cy="73" r="6" fill="#8b8bef"/>
+  <circle cx="58" cy="141" r="5" fill="#e96ba8"/>
+</svg>
