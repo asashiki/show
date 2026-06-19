@@ -42,41 +42,43 @@
   </header>
 
   <main>
-    <!-- 静态展示：抄取项目后台和对话组件的关键元素，非真实功能 -->
+    <!-- 静态复刻 src/admin/admin.html 的后台画面，非真实功能 -->
     <section>
       <div class="wrap">
-        <div class="sec-head"><h2>后台一眼看懂</h2><p>图片、名称、标签和搜索都摆在同一屏，AI 选图时也能按这些标签判断语气。</p></div>
-        <div class="admin-showcase">
-          <div class="admin-preview" aria-label="sticker-mcp admin console preview">
-            <div class="admin-topbar">
-              <div class="admin-brand">Sticker Library <small>表情包管理</small></div>
-              <span class="admin-count">6 张</span>
-              <div class="admin-seg"><span class="on">浅色</span><span>深色</span></div>
+        <div class="sec-head"><h2>管理后台</h2><p>下面按项目里的 <code>src/admin/admin.html</code> 复刻，只展示页面画面，不实现真实上传和接口调用。</p></div>
+        <div class="admin-replica" aria-label="sticker-mcp admin page static replica">
+          <div class="topbar"><div class="topbar-inner">
+            <div class="brand">Sticker Library <small>表情包管理</small></div>
+            <div class="spacer"></div>
+            <span class="count">4 张</span>
+            <div class="seg">
+              <button class="on">浅色</button>
+              <button>深色</button>
             </div>
-            <div class="admin-panel">
-              <div class="admin-section-title"><h3>添加表情</h3><span>UPLOAD</span></div>
-              <div class="drop-preview">拖拽 / 粘贴图片到这里，或 <b>点击选择文件</b><small>png · jpg · gif · webp · avif，单张 ≤ 8MB</small></div>
-            </div>
-            <div class="admin-panel">
-              <div class="admin-section-title"><h3>表情库</h3><span>GALLERY</span></div>
-              <div class="admin-search">按名称或标签筛选...</div>
-              <div class="sticker-grid">
-                <article class="sticker-card"><img src="/assets/sticker-mcp/sticker-yay.svg" alt="撒花"><strong>撒花</strong><p><span>开心</span><span>庆祝</span></p></article>
-                <article class="sticker-card"><img src="/assets/sticker-mcp/sticker-shock.svg" alt="震惊"><strong>震惊</strong><p><span>惊讶</span><span>意外</span></p></article>
-                <article class="sticker-card"><img src="/assets/sticker-mcp/sticker-think.svg" alt="思考"><strong>思考</strong><p><span>分析</span><span>等等</span></p></article>
-                <article class="sticker-card"><img src="/assets/sticker-mcp/sticker-ok.svg" alt="收到"><strong>收到</strong><p><span>确认</span><span>ok</span></p></article>
-                <article class="sticker-card"><img src="/assets/sticker-mcp/sticker-work.svg" alt="开工"><strong>开工</strong><p><span>行动</span><span>coding</span></p></article>
-                <article class="sticker-card"><img src="/assets/sticker-mcp/sticker-sleep.svg" alt="晚安"><strong>晚安</strong><p><span>休息</span><span>困</span></p></article>
+          </div></div>
+
+          <div class="page">
+            <div class="admin-sec-head"><h2>添加表情</h2><span class="jp">UPLOAD</span></div>
+            <div class="panel">
+              <div class="drop">
+                拖拽 / 粘贴图片到这里，或 <em>点击选择文件</em>
+                <div class="hint">png · jpg · gif · webp · avif，单张 ≤ 8MB，可一次多张</div>
               </div>
             </div>
+
+            <div class="admin-sec-head"><h2>表情库</h2><span class="jp">GALLERY</span></div>
+            <div class="toolbar">
+              <div class="search">按名称或标签筛选…</div>
+            </div>
+            <div class="gallery">
+              <!-- 图片占位：如果之后要放真实表情图，把 .pic-slot 换成 <img class="pic" src="..." alt="..."> 即可。 -->
+              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">猫猫震惊</div><div class="card-tags"><span>震惊</span><span>意外</span></div></div></article>
+              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">收到收到</div><div class="card-tags"><span>ok</span><span>确认</span></div></div></article>
+              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">开始干活</div><div class="card-tags"><span>coding</span><span>行动</span></div></div></article>
+              <article class="admin-card"><div class="pic pic-slot"></div><div class="info"><div class="nm">晚安休息</div><div class="card-tags"><span>困</span><span>休息</span></div></div></article>
+            </div>
+            <div class="footer">sticker-mcp · 此页面直接管理服务器上的表情库 · AI 在对话里通过 <code>send_sticker</code> 发送</div>
           </div>
-          <aside class="chat-preview" aria-label="inline sticker rendering preview">
-            <div class="bar"><i></i><i></i><i></i></div>
-            <div class="bubble me">这波操作可以啊</div>
-            <div class="bubble">AI 先看图库，再按语气选一张。</div>
-            <div class="bubble sticker"><img src="/assets/sticker-mcp/sticker-yay.svg" alt="AI 发送的撒花表情"></div>
-            <div class="tool-call"><code>send_sticker</code><span>query: "庆祝 成功"</span></div>
-          </aside>
         </div>
       </div>
     </section>

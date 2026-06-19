@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="晚安贴纸">
-  <rect width="220" height="220" rx="30" fill="#f5f0ff"/>
-  <circle cx="103" cy="122" r="56" fill="#ffffff" stroke="#8b8bef" stroke-width="5"/>
-  <path d="M77 111c9 8 18 8 27 0M120 111c9 8 18 8 27 0" fill="none" stroke="#3a3340" stroke-width="7" stroke-linecap="round"/>
-  <path d="M91 141c12 8 25 8 38 0" fill="none" stroke="#3a3340" stroke-width="7" stroke-linecap="round"/>
-  <path d="M149 52h31l-31 34h31M128 28h22l-22 24h22" fill="none" stroke="#e96ba8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M55 166h112" stroke="#8b8bef" stroke-width="8" stroke-linecap="round" opacity=".45"/>
-</svg>
