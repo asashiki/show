@@ -1,0 +1,4 @@
+# 控制台是 SPA（react-router, basename=/console）。
+# 深链接 / 刷新时回退到其入口，让前端路由接管。
+/console/assets/*  /console/assets/:splat  200
+/console/*         /console/index.html     200
