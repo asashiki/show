@@ -13,24 +13,23 @@ show/
 ├── index.html              # 首页：所有项目卡片网格
 ├── projects/
 │   └── sticker-mcp.html    # 单项目展示页（其余项目照此克隆）
-├── console-app.html        # mcp-switch 控制台 SPA 外壳（真实前端 + 演示 mock 层）
-├── console/
+├── console/                # mcp-switch 控制台实页展示
+│   ├── index.html          # 控制台 SPA 外壳（真实前端 + 演示 mock 层）
 │   └── assets/             # 控制台构建产物（JS / CSS，从 mcp-switch 同步）
 ├── assets/
 │   ├── site.css            # 站点样式（基于设计系统 tokens）
 │   └── theme.js            # 明/暗 + 四季配色切换
 ├── _headers                # Cloudflare Pages 缓存 / 安全头
-├── _redirects              # SPA 回退（/console/* → console-app.html）
 └── README.md
 ```
 
 ### 两种展示形态
 
 1. **静态示意页**（`projects/*.html`）—— 抄项目关键 UI 元素做静态仿真，轻量、自包含。多数项目用这种。
-2. **实页展示**（`console-app.html` + `console/assets/`）—— 当项目本身就有一套完整前端时，直接搬它的**构建产物**进来，再注入一层「mock fetch」喂样例数据：跑的是真实代码，所以与线上**视觉与交互完全一致**，无需后端。即 mcp-switch 控制台的实页展示，访问 `/console/`（经 `_redirects` 回退到 `console-app.html`）。
-   - 更新方式：`pnpm build` mcp-switch 的 console-web 后，把 `apps/mcp-gateway/console-web-dist/assets/*` 覆盖到 `console/assets/`，必要时同步 `console-app.html` 里引用的文件名 hash。
+2. **实页展示**（`console/`）—— 当项目本身就有一套完整前端时，直接搬它的**构建产物**进来，再注入一层「mock fetch」喂样例数据：跑的是真实代码，所以与线上**视觉与交互完全一致**，无需后端。即 mcp-switch 控制台的实页展示，访问 `/console/`。
+   - 更新方式：`pnpm build` mcp-switch 的 console-web 后，把 `apps/mcp-gateway/console-web-dist/assets/*` 覆盖到 `console/assets/`，必要时同步 `console/index.html` 里引用的文件名 hash。
    - mock 层只在控制台启动前预置假 token + 拦截 `/api/console/*`，**不改动控制台一行源码**。
-   - **外壳为何放在 `/console/` 之外**：Cloudflare Pages 会把 URL 里的 `.html` / `/index` 清理掉；若重写目标在 `/console/` 下（如 `/console/index.html`→清理为 `/console/`），会重新命中 `/console/*` 形成无限重定向，部署被拒。放在根的 `console-app.html`（清理为 `/console-app`）不匹配 `/console/*`，安全。
+   - **不要用 `_redirects` 给 `/console/*` 做 SPA 回退**：Cloudflare Pages 会清理 URL（剥 `.html`/`/index`），catch-all 会把 `/console/` 下的**所有路径（含 JS/CSS 资源）一并 307 跳走**，导致资源被当成 HTML 返回、bundle 加载失败、页面空白。直接放真实静态文件即可：`/console/` 走目录索引、`/console/assets/*` 直接按 JS/CSS 送达。控制台 SPA 在落地页内点 tab 走前端路由，无需服务端回退（深链接直接刷新子路由会 404，对展示无影响）。
 
 ## 设计来源（重要）
 

@@ -224,14 +224,6 @@
         }
         return realFetch(input, init);
       };
-
-      // ---- 5. 顶部展示横幅（不影响控制台本体） ------------------------------
-      window.addEventListener("DOMContentLoaded", function () {
-        var b = document.createElement("div");
-        b.textContent = "演示模式 · 数据为样例，操作不会保存 · MCP Switch Console";
-        b.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:9999;text-align:center;font:12px/2.2 system-ui,-apple-system,'PingFang SC',sans-serif;color:#fff;background:linear-gradient(90deg,#e96ba8,#8b8bef);letter-spacing:.02em;opacity:.92;";
-        document.body.appendChild(b);
-      });
     })();
     </script>
     <script type="module" crossorigin src="/console/assets/index-DmGHPaU1.js"></script>
