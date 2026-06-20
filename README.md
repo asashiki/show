@@ -6,6 +6,8 @@
 
 这是一个**纯静态站点**，无构建步骤，托管在 Cloudflare Pages。任何能向本仓库推送代码的人（或 AI）都能维护它。
 
+> 📘 **维护前请先读 [`PLAYBOOK.md`](PLAYBOOK.md)** —— 实页展示的正确做法、Cloudflare Pages 的必踩坑（尤其是 `_redirects` 导致空白页）、以及出问题怎么排查。
+
 ## 目录结构
 
 ```
