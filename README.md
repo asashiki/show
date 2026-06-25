@@ -1,8 +1,17 @@
+<div align="center">
+
+<img src="https://cdn.jsdelivr.net/gh/asashiki/asashiki-design@main/assets/brand/asashiki-mark-color-t.png" alt="Asashiki" width="84" />
+
 # show · Asashiki 项目展示站
 
-> 浅仪式 Asashiki 各项目的**在线展示**集合 → **https://show.asashiki.com**
->
-> 比截图更高级：页面会跟随项目演进，由 [Asashiki Design](https://github.com/asashiki/asashiki-design) 设计系统统一驱动。
+浅仪式 Asashiki 各项目的**在线展示**集合。比截图更高级 —— 页面跟随项目演进，由设计系统统一驱动。
+
+[![Live](https://img.shields.io/badge/Live-show.asashiki.com-6b6570?style=flat-square&labelColor=221f26)](https://show.asashiki.com)
+![Deploy](https://img.shields.io/badge/Deploy-Cloudflare_Pages-6b6570?style=flat-square&labelColor=221f26)
+![Build](https://img.shields.io/badge/Build-zero--config-6b6570?style=flat-square&labelColor=221f26)
+[![Asashiki Design](https://img.shields.io/badge/Asashiki-Design_System-e85d97?style=flat-square&labelColor=221f26)](https://github.com/asashiki/asashiki-design)
+
+</div>
 
 这是一个**纯静态站点**，无构建步骤，托管在 Cloudflare Pages。任何能向本仓库推送代码的人（或 AI）都能维护它。
 
@@ -70,3 +79,9 @@ python3 -m http.server 8080   # 然后访问 http://localhost:8080
 | --- | --- |
 | [`asashiki-design`](https://github.com/asashiki/asashiki-design) | 设计系统 · 提供 tokens |
 | [`doc`](https://github.com/asashiki/doc) | 文档展示站 → doc.asashiki.com |
+
+---
+
+<div align="center">
+<sub>界面与文档遵循 <a href="https://github.com/asashiki/asashiki-design">Asashiki Design</a> · 墨と桜 —— 暖中性灰打底，樱粉作克制点缀。</sub>
+</div>
