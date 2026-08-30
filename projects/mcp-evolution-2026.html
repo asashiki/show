@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-palette="sakura">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCP 2026 进化计划 · Asashiki</title>
+  <meta name="description" content="MCP Switch、Music、Sticker 与 Device Timeline 的 2026 协议、MCP Apps、安全和部署升级总览。" />
+  <script>
+    (function () { var r = document.documentElement;
+      r.setAttribute("data-theme", localStorage.getItem("ad-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+      r.setAttribute("data-palette", localStorage.getItem("ad-palette") || "sakura"); })();
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/asashiki/asashiki-design@main/tokens/tokens.css" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body>
+  <nav class="nav"><div class="wrap">
+    <a class="brand" href="/"><span class="mark"><span>浅</span></span> Asashiki</a>
+    <span class="spacer"></span>
+    <a class="navlink" href="#matrix">兼容矩阵</a>
+    <a class="navlink" href="#deploy">部署测试</a>
+    <a class="navlink" href="https://github.com/asashiki/mcp-switch" target="_blank" rel="noopener">GitHub</a>
+    <div class="ctrls"><button class="iconbtn" id="paletteBtn" title="切换季节配色">🌸</button><button class="iconbtn" id="themeBtn" title="切换明暗">☀️</button></div>
+  </div></nav>
+
+  <header class="hero evolution-hero"><div class="glow"></div><div class="wrap">
+    <a class="back" href="/">← 返回项目展示</a><br />
+    <span class="eyebrow"><span>✦ MCP 2026 EVOLUTION</span></span>
+    <h1>从“能接上”，<br />进化到“接得稳”。</h1>
+    <p class="lead">这次不是只换一个 SDK 版本。协议保真、上游长连接、OAuth 边界、跨宿主 MCP Apps 与可回滚部署，被作为同一套产品能力一起重做。</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#matrix">看交付矩阵</a>
+      <a class="btn btn-ghost" href="https://github.com/asashiki/mcp-switch/pull/4" target="_blank" rel="noopener">审阅 Switch Draft PR</a>
+    </div>
+  </div></header>
+
+  <main>
+    <section class="compact-section"><div class="wrap">
+      <div class="metric-grid" aria-label="升级状态">
+        <div class="metric"><strong>4</strong><span>独立 Draft PR</span></div>
+        <div class="metric"><strong>49</strong><span>自动化测试通过</span></div>
+        <div class="metric"><strong>2</strong><span>协议世代同端点</span></div>
+        <div class="metric"><strong>0</strong><span>次直接修改 main</span></div>
+      </div>
+    </div></section>
+
+    <section id="matrix"><div class="wrap">
+      <div class="sec-head"><h2>实际交付，不是愿望清单</h2><p>所有代码都在独立功能分支；PR 保持 Draft，合并权留给仓库所有者。</p></div>
+      <div class="table-wrap"><table class="matrix">
+        <thead><tr><th>项目</th><th>协议 / 运行时</th><th>UI 与元数据</th><th>安全边界</th><th>验证</th></tr></thead>
+        <tbody>
+          <tr><th>mcp-switch</th><td><span class="status good">2026 + legacy</span><br />上游自动协商、连接单飞复用</td><td>原始 Schema / annotations / icons / Apps URI 保真；冲突命名空间</td><td>OAuth resource/audience、Origin/Host、rootless</td><td><b>32/32</b><br /><a href="https://github.com/asashiki/mcp-switch/pull/4" target="_blank" rel="noopener">Draft PR #4</a></td></tr>
+          <tr><th>music-mcp</th><td><span class="status good">2026 + legacy</span><br />Range 音频代理、超时与 SSRF 防护</td><td>MCP Apps <code>ui/*</code> 为主；<code>window.openai</code> 渐进增强；精简组件</td><td>PKCE / resource / audience、媒体跨域头、非 root</td><td><b>7/7</b><br /><a href="https://github.com/asashiki/music-mcp/pull/1" target="_blank" rel="noopener">Draft PR #1</a></td></tr>
+          <tr><th>sticker-mcp</th><td><span class="status good">2026 + legacy</span><br />新版远程传输与 stdio</td><td>标准 UI bridge、兼容别名、组件 URI v8</td><td>管理 Token 不再进 URL；上传/外链 SSRF 与流式大小限制</td><td><b>6/6</b><br /><a href="https://github.com/asashiki/sticker-mcp/pull/1" target="_blank" rel="noopener">Draft PR #1</a></td></tr>
+          <tr><th>device-timeline</th><td><span class="status good">2026 + legacy</span><br />五个数据工具保持无 UI 可用</td><td>结构化结果 + 完整只读/幂等/非开放世界标注</td><td>设备写入、REST 读取、AI MCP 三个凭据域完全分离</td><td><b>4/4</b><br /><a href="https://github.com/asashiki/device-timeline-mcp/pull/3" target="_blank" rel="noopener">Draft PR #3</a></td></tr>
+        </tbody>
+      </table></div>
+    </div></section>
+
+    <section class="tinted"><div class="wrap">
+      <div class="sec-head"><h2>为什么音乐组件会“工具成功，界面失败”</h2><p>聊天中的播放器不是普通网页。它同时受 MCP 元数据、iframe 沙箱、CSP、媒体 Range 请求和宿主 bridge 约束。</p></div>
+      <div class="feature-list">
+        <div class="feature"><h4>标准优先</h4><p>新组件先声明 <code>_meta.ui.resourceUri</code>，通过 MCP Apps <code>ui/*</code> JSON-RPC bridge 收取输入和结果；OpenAI 兼容字段只保留为别名。</p></div>
+        <div class="feature"><h4>能力检测</h4><p>不判断“这是 ChatGPT 还是别家”，而是检测宿主是否提供对应能力。没有组件渲染的客户端仍能读懂文本与结构化结果。</p></div>
+        <div class="feature"><h4>媒体链路</h4><p>音频由同源代理提供，保留 <code>206</code>、<code>Content-Range</code> 与 <code>Accept-Ranges</code>，并补齐 CSP / CORP / CORS，避免播放器能开却不能播或拖动。</p></div>
+      </div>
+      <div class="callout"><b>设计依据</b><span>OpenAI 当前文档明确建议先实现开放 MCP Apps 标准，再用 <code>window.openai</code> 做标准之外的渐进增强。</span><a href="https://developers.openai.com/plugins/build/chatgpt-ui" target="_blank" rel="noopener">官方说明 →</a></div>
+    </div></section>
+
+    <section id="deploy"><div class="wrap">
+      <div class="sec-head"><h2>怎么测试，哪里能“白嫖”</h2><p>短期测试与长期运行不是同一道题。下面按当前代码是否需要重写、是否保留 SQLite/stdio 能力来判断。</p></div>
+      <div class="table-wrap"><table class="matrix deploy-matrix">
+        <thead><tr><th>方案</th><th>适合做什么</th><th>结论</th><th>关键限制</th></tr></thead>
+        <tbody>
+          <tr><th>现有 VPS 蓝绿</th><td>最终上线、长期运行、stdio 上游</td><td><span class="status good">首选</span></td><td>新实例换端口/数据库副本；跑完 canary 再切反代，不覆盖老版</td></tr>
+          <tr><th>本地 Docker + Quick Tunnel</th><td>从 ChatGPT / Claude 做 1–2 天远程冒烟</td><td><span class="status good">免费测试</span></td><td>电脑必须在线；随机域名；无 SLA；Quick Tunnel 不支持 SSE，因此只验当前请求/响应主路径</td></tr>
+          <tr><th>Cloudflare Pages</th><td>本展示站、静态文档与组件截图</td><td><span class="status good">可直接用</span></td><td>不提供网关计算、子进程或 SQLite</td></tr>
+          <tr><th>普通 Workers</th><td>未来重写后的纯 HTTP MCP</td><td><span class="status warn">不能原样跑</span></td><td>Workers 只有 Node API 子集；当前 Switch 的 stdio 子进程和本地 SQLite 模型需要重构</td></tr>
+          <tr><th>Cloudflare Containers</th><td>容器实验、无状态上游</td><td><span class="status warn">不是白嫖 VPS</span></td><td>免费档不可用，至少 $5 Workers Paid；磁盘休眠后重置，SQLite 需外置/重构</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="steps">
+        <div><span>1</span><h4>本地并行启动</h4><p>从功能分支起新 Compose project，使用新端口和数据库副本；老 VPS 不动。</p></div>
+        <div><span>2</span><h4>给测试实例 HTTPS</h4><p>临时使用 <code>cloudflared tunnel --url http://localhost:端口</code>；正式 canary 用受管 Tunnel 或备用域名。</p></div>
+        <div><span>3</span><h4>跑协议 canary</h4><p>检查 health、OAuth metadata、MCP 2026、旧版、工具目录与组件资源，再接入真实聊天客户端。</p></div>
+        <div><span>4</span><h4>观察后切流</h4><p>比较延迟、错误率、stdio 进程数和音乐 Range 请求；异常就撤销测试 URL，不影响旧实例。</p></div>
+      </div>
+      <p class="sources">部署判断依据：<a href="https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/" target="_blank" rel="noopener">Quick Tunnels</a> · <a href="https://developers.cloudflare.com/workers/runtime-apis/" target="_blank" rel="noopener">Workers Runtime APIs</a> · <a href="https://developers.cloudflare.com/containers/platform/pricing/" target="_blank" rel="noopener">Containers Pricing</a> · <a href="https://developers.cloudflare.com/containers/concepts/architecture/" target="_blank" rel="noopener">Container Lifecycle</a></p>
+    </div></section>
+
+    <section class="tinted"><div class="wrap prose">
+      <div class="sec-head"><h2>这篇文章可以怎么讲</h2><p>重点不是“追上一个版本号”，而是解释 MCP 聚合器为什么必须从工具转发器变成协议与信任边界。</p></div>
+      <ol class="article-outline">
+        <li><b>从一个 URL 接所有工具说起：</b>为什么 mcp-switch 的产品方向仍然成立。</li>
+        <li><b>协议升级暴露的旧债：</b>重复连接、Schema 压扁、组件 URI 冲突、OAuth audience。</li>
+        <li><b>ChatGPT 音乐组件事故：</b>工具调用成功不等于 iframe、CSP、Range 与 bridge 成功。</li>
+        <li><b>这次真正做了什么：</b>四个 PR、49 个测试、三种凭据域与蓝绿部署。</li>
+        <li><b>MCP 热度退潮之后：</b>少谈“生态万物皆 MCP”，多谈可靠性、可移植 UI 与可审计边界。</li>
+      </ol>
+    </div></section>
+  </main>
+
+  <footer><div class="wrap"><span>Asashiki · MCP 2026 Evolution</span><span class="spacer"></span><a href="/">项目展示</a><a href="https://github.com/asashiki" target="_blank" rel="noopener">GitHub</a><span>最后核对：2026-08-30</span></div></footer>
+  <script src="/assets/theme.js"></script>
+</body>
+</html>

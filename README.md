@@ -23,7 +23,8 @@
 show/
 ├── index.html              # 首页：所有项目卡片网格
 ├── projects/
-│   └── sticker-mcp.html    # 单项目展示页（其余项目照此克隆）
+│   ├── sticker-mcp.html    # Sticker 静态交互演示
+│   └── mcp-evolution-2026.html # 协议 / UI / 安全 / 部署总览
 ├── console/                # mcp-switch 控制台实页展示
 │   ├── index.html          # 控制台 SPA 外壳（真实前端 + 演示 mock 层）
 │   └── assets/             # 控制台构建产物（JS / CSS，从 mcp-switch 同步）
@@ -41,6 +42,8 @@ show/
    - 更新方式：`pnpm build` mcp-switch 的 console-web 后，把 `apps/mcp-gateway/console-web-dist/assets/*` 覆盖到 `console/assets/`，必要时同步 `console/index.html` 里引用的文件名 hash。
    - mock 层只在控制台启动前预置假 token + 拦截 `/api/console/*`，**不改动控制台一行源码**。
    - **不要用 `_redirects` 给 `/console/*` 做 SPA 回退**：Cloudflare Pages 会清理 URL（剥 `.html`/`/index`），catch-all 会把 `/console/` 下的**所有路径（含 JS/CSS 资源）一并 307 跳走**，导致资源被当成 HTML 返回、bundle 加载失败、页面空白。直接放真实静态文件即可：`/console/` 走目录索引、`/console/assets/*` 直接按 JS/CSS 送达。控制台 SPA 在落地页内点 tab 走前端路由，无需服务端回退（深链接直接刷新子路由会 404，对展示无影响）。
+
+`projects/mcp-evolution-2026.html` 是一种**可核验的工程总览**：不伪装成实时状态页，而是集中呈现协议代际、测试数、Draft PR、部署限制和官方依据。数字变化时应与对应 PR 同步更新。
 
 ## 设计来源（重要）
 
