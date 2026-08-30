@@ -135,6 +135,53 @@ pre.code {
 }
 pre.code .c { color: var(--text-3); }
 
+/* ── MCP 2026 进化总览 ───────────────────── */
+.evolution-hero .back { margin: 0 0 1.25rem; }
+.compact-section { padding-top: 0; }
+.tinted { background: var(--bg-subtle); border-block: 1px solid var(--border); }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .8rem; }
+.metric {
+  display: grid; gap: .15rem; padding: 1rem 1.1rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+}
+.metric strong { color: var(--accent); font-size: 1.7rem; line-height: 1.1; }
+.metric span { color: var(--text-2); font-size: .82rem; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.matrix { width: 100%; border-collapse: collapse; min-width: 860px; }
+.matrix th, .matrix td { padding: .9rem 1rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); font-size: .86rem; }
+.matrix thead th { color: var(--text-2); background: var(--bg-subtle); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; }
+.matrix tbody th { color: var(--text); white-space: nowrap; }
+.matrix tbody td { color: var(--text-2); }
+.matrix tr:last-child th, .matrix tr:last-child td { border-bottom: 0; }
+.matrix code, .feature code, .callout code, .steps code { color: var(--text); font-family: var(--font-mono, ui-monospace, monospace); font-size: .82em; }
+.status { display: inline-block; padding: .12rem .42rem; border-radius: 7px; font-size: .69rem; font-weight: 700; letter-spacing: .02em; }
+.status.good { color: var(--success); background: var(--success-soft); }
+.status.warn { color: var(--warning, var(--accent)); background: var(--warning-soft, var(--accent-soft)); }
+.callout {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .8rem;
+  margin-top: 1.5rem; padding: 1rem 1.1rem; border: 1px solid var(--border-strong);
+  border-radius: 14px; background: var(--surface);
+}
+.callout b { color: var(--accent); white-space: nowrap; }
+.callout span { color: var(--text-2); font-size: .88rem; }
+.callout a { font-size: .82rem; font-weight: 600; white-space: nowrap; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: .8rem; margin-top: 1.2rem; }
+.steps > div { position: relative; padding: 1rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.steps span { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 7px; background: var(--accent-soft); color: var(--accent); font-size: .72rem; font-weight: 700; }
+.steps h4 { margin: .7rem 0 .3rem; font-size: .92rem; }
+.steps p { color: var(--text-2); font-size: .82rem; }
+.sources { margin-top: 1rem; color: var(--text-3); font-size: .76rem; }
+.article-outline { display: grid; gap: .8rem; padding-left: 1.25rem; }
+.article-outline li { padding-left: .25rem; color: var(--text-2); }
+.article-outline b { color: var(--text); }
+
 @media (max-width: 560px) {
   .nav a.navlink { display: none; }
+  .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  .callout { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 561px) and (max-width: 900px) {
+  .steps { grid-template-columns: repeat(2, 1fr); }
 }
