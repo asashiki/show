@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corner Magnet · 原生 macOS 光标磁吸实验</title>
+<meta name="description" content="一个极轻的原生 macOS 菜单栏实验，让鼠标更自然地靠近窗口关闭、最小化和缩放按钮。">
+<style>
+:root{--bg:#fff;--surface:#fffafd;--tint:#fff2f9;--border:#f0dce8;--text:#39323e;--muted:#887b8e;--accent:#e96ba8;--accent2:#8b8bef;--shadow:0 4px 24px rgba(100,60,90,.07);--radius:14px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+[data-theme="dark"]{--bg:#16131c;--surface:#201b2a;--tint:#372240;--border:#3e3149;--text:#f1eaf4;--muted:#b3a2ba;--accent:#f48fc4;--accent2:#a9a9fa;--shadow:0 4px 24px rgba(0,0,0,.2)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}.top{border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);position:sticky;top:0;backdrop-filter:blur(14px)}.topin,.page{max-width:900px;margin:auto;padding:14px 24px}.topin{display:flex;align-items:center;gap:12px}.brand{font-weight:700;text-decoration:none;color:var(--text)}.spacer{flex:1}.top a:not(.brand){color:var(--muted);text-decoration:none;font-size:13px}.page{padding-top:64px;padding-bottom:72px}.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}.hero{display:grid;grid-template-columns:1fr 250px;gap:40px;align-items:center}.hero h1{font-size:clamp(38px,7vw,64px);letter-spacing:-.055em;line-height:1.08;margin:16px 0}.hero p{font-size:17px;color:var(--muted);max-width:590px}.glyph{width:210px;height:210px;border:1px solid var(--border);border-radius:42px;background:linear-gradient(145deg,var(--surface),var(--tint));display:grid;place-items:center;box-shadow:var(--shadow);margin:auto}.glyph svg{width:125px;height:125px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border-radius:10px;border:1px solid var(--border);text-decoration:none;color:var(--text);font-size:13px;font-weight:600}.btn.primary{background:var(--accent);color:#fff;border-color:transparent}.section{margin-top:58px}.section h2{font-size:20px;letter-spacing:-.02em}.section p,.section li{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{padding:17px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}.tile b{display:block;font-size:14px;margin-bottom:6px}.tile span{font-size:13px;color:var(--muted)}.code{font:12px ui-monospace,SFMono-Regular,monospace;background:var(--tint);padding:3px 6px;border-radius:5px}.footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}@media(max-width:650px){.hero{grid-template-columns:1fr}.glyph{grid-row:1;width:150px;height:150px;border-radius:30px}.glyph svg{width:90px;height:90px}.page{padding-top:38px}.grid{grid-template-columns:1fr}}
+</style>
+<script>(function(){var r=document.documentElement;r.setAttribute("data-theme",localStorage.getItem("ad-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));})();</script>
+</head>
+<body>
+<nav class="top"><div class="topin"><a class="brand" href="/">浅仪式 · Asashiki</a><span class="spacer"></span><a href="/#projects">全部项目</a><a href="https://github.com/asashiki/show/tree/feat/corner-magnet-native-prototype/native-tools/corner-magnet">源码</a></div></nav>
+<main class="page">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Native macOS experiment · 001</div>
+      <h1>Corner<br>Magnet</h1>
+      <p>让光标靠近窗口控制按钮时，像有一点点磁力一样，自然地向它靠近。不是窗口管理器，只是一种几乎感觉不到的交互修饰。</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/asashiki/show/tree/feat/corner-magnet-native-prototype/native-tools/corner-magnet">查看源码 ↗</a>
+        <a class="btn" href="https://github.com/asashiki/show/blob/feat/corner-magnet-native-prototype/native-tools/corner-magnet/README.md">构建说明</a>
+      </div>
+    </div>
+    <div class="glyph" aria-hidden="true">
+      <svg viewBox="0 0 120 120" fill="none">
+        <rect x="14" y="22" width="92" height="76" rx="8" stroke="currentColor" stroke-opacity=".22"/>
+        <path d="M14 34H106" stroke="currentColor" stroke-opacity=".22"/>
+        <circle cx="25" cy="28" r="2.4" fill="#F071A8"/><circle cx="33" cy="28" r="2.4" fill="#E7B15B"/><circle cx="41" cy="28" r="2.4" fill="#7EBE91"/>
+        <path d="M63 66C54 61 48 52 43 40" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 5"/>
+        <path d="M37 44L43 37L48 46" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="63" cy="66" r="5" fill="var(--accent2)"/>
+      </svg>
+    </div>
+  </section>
+  <section class="section">
+    <h2>它只做一件事</h2>
+    <div class="grid">
+      <div class="tile"><b>方向感知</b><span>只有当你正朝目标移动时才产生吸引，不会把离开的光标拉回来。</span></div>
+      <div class="tile"><b>轻柔而有边界</b><span>仅在小范围内介入，分段靠近，不会自动点击任何按钮。</span></div>
+      <div class="tile"><b>安静常驻</b><span>原生 Swift / AppKit，无窗口覆盖层、无网络、无遥测、无空闲轮询。</span></div>
+    </div>
+  </section>
+  <section class="section">
+    <h2>当前状态</h2>
+    <p>这是第一版技术原型。核心几何逻辑有单元测试，并配置了 macOS CI；真实光标手感、权限行为、多显示器坐标与 CPU 占用仍需要在实际 Mac 上验证。现在没有可供直接下载的签名公证版本。</p>
+    <ul>
+      <li>系统要求：macOS 13+，Apple Silicon 与 Intel 理论上均可构建。</li>
+      <li>首次启用需要在系统设置中授予辅助功能权限。</li>
+      <li>运行后默认关闭；从菜单栏随时停用。</li>
+    </ul>
+  </section>
+  <section class="section">
+    <h2>本地构建</h2>
+    <p>克隆仓库后进入 <span class="code">native-tools/corner-magnet</span>，运行 <span class="code">./Scripts/build-app.sh</span>。脚本会先运行测试，再构建一个本地 ad-hoc 签名的 <span class="code">Corner Magnet.app</span>。</p>
+  </section>
+  <footer class="footer">Asashiki Native Experiments · 原生优先，少即是多。</footer>
+</main>
+</body>
+</html>

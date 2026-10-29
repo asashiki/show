@@ -1,0 +1,27 @@
+name: Corner Magnet
+
+on:
+  push:
+    paths:
+      - "native-tools/corner-magnet/**"
+      - ".github/workflows/corner-magnet.yml"
+  pull_request:
+    paths:
+      - "native-tools/corner-magnet/**"
+      - ".github/workflows/corner-magnet.yml"
+  workflow_dispatch:
+
+jobs:
+  test-and-build:
+    runs-on: macos-14
+    defaults:
+      run:
+        working-directory: native-tools/corner-magnet
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Swift
+        run: swift --version
+      - name: Run geometry tests
+        run: swift test
+      - name: Build app bundle
+        run: ./Scripts/build-app.sh
